@@ -1,7 +1,11 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Page from './Page.jsx'
-import { next, prev } from './store.js'
+import { setIndex } from './store.js'
+
+const PAGES_BEFORE = 1
+const PAGES_AFTER = 2
+const WINDOW = PAGES_BEFORE + 1 + PAGES_AFTER
 
 export default function App() {
   const currentIndex = useSelector((s) => s.feed.currentIndex)
@@ -13,7 +17,7 @@ export default function App() {
     const el = containerRef.current
     if (!el) return
     ignoreScrollRef.current = true
-    el.scrollTop = el.clientHeight
+    el.scrollTop = PAGES_BEFORE * el.clientHeight
   }, [currentIndex])
 
   useEffect(() => {
@@ -25,19 +29,23 @@ export default function App() {
         return
       }
       const h = el.clientHeight
-      const page = Math.round(el.scrollTop / h)
-      if (page === 0) dispatch(prev())
-      else if (page === 2) dispatch(next())
+      const slot = Math.round(el.scrollTop / h)
+      const newIndex = currentIndex + (slot - PAGES_BEFORE)
+      if (newIndex !== currentIndex) dispatch(setIndex(newIndex))
     }
     el.addEventListener('scrollend', onScrollEnd)
     return () => el.removeEventListener('scrollend', onScrollEnd)
-  }, [dispatch])
+  }, [dispatch, currentIndex])
 
   return (
     <div ref={containerRef} className="feed">
-      <Page index={currentIndex - 1} />
-      <Page index={currentIndex} />
-      <Page index={currentIndex + 1} />
+      {Array.from({ length: WINDOW }, (_, slot) => (
+        <Page
+          key={currentIndex - PAGES_BEFORE + slot}
+          index={currentIndex - PAGES_BEFORE + slot}
+          active={slot === PAGES_BEFORE}
+        />
+      ))}
     </div>
   )
 }
