@@ -24,18 +24,20 @@ html, body, #root {
 
 .page-info {
   position: absolute;
-  left: 16px;
-  bottom: 24px;
+  bottom: 3dvh;
+  left: 2.5dvh;
   max-width: calc(100% - 96px);
   pointer-events: none;
 }
+
 .page-name {
   font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 8px;
+  font-size: 4.5vw;
+  margin-bottom: 1dvh;
 }
+
 .page-caption {
-  font-size: 14px;
+  font-size: 4vw;
   line-height: 1.4;
 }
 
