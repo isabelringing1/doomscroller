@@ -2,4 +2,61 @@ html, body, #root {
   margin: 0;
   height: 100%;
   background: #000;
+  color: #fff;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
+
+.feed {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  overscroll-behavior: contain;
+}
+.feed::-webkit-scrollbar { display: none; }
+
+.page {
+  position: relative;
+  height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  background: #000;
+}
+
+.page-info {
+  position: absolute;
+  left: 16px;
+  bottom: 24px;
+  max-width: calc(100% - 96px);
+  pointer-events: none;
+}
+.page-name {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.page-caption {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.page-actions {
+  position: absolute;
+  right: 1dvh;
+  bottom: 10dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.page-actions button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.page-actions button:active { transform: scale(0.92); }
