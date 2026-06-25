@@ -1,9 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-
-function durationForIndex(index) {
-  const t = Math.abs(Math.sin((index + 1) * 12.9898) * 43758.5453) % 1
-  return 5 + t * 10
-}
+import { durationForIndex } from './pageMeta.js'
 
 export default function PageDuration({ index, active }) {
   const duration = useMemo(() => durationForIndex(index), [index])

@@ -18,23 +18,29 @@ export default function App() {
     if (!el) return
     ignoreScrollRef.current = true
     el.scrollTop = PAGES_BEFORE * el.clientHeight
+    requestAnimationFrame(() => { ignoreScrollRef.current = false })
   }, [currentIndex])
 
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
-    const onScrollEnd = () => {
-      if (ignoreScrollRef.current) {
-        ignoreScrollRef.current = false
-        return
-      }
+    let t
+    const sync = () => {
+      if (ignoreScrollRef.current) return
       const h = el.clientHeight
       const slot = Math.round(el.scrollTop / h)
       const newIndex = currentIndex + (slot - PAGES_BEFORE)
       if (newIndex !== currentIndex) dispatch(setIndex(newIndex))
     }
-    el.addEventListener('scrollend', onScrollEnd)
-    return () => el.removeEventListener('scrollend', onScrollEnd)
+    const onScroll = () => {
+      clearTimeout(t)
+      t = setTimeout(sync, 80)
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      el.removeEventListener('scroll', onScroll)
+      clearTimeout(t)
+    }
   }, [dispatch, currentIndex])
 
   return (
