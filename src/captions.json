@@ -1,0 +1,27 @@
+[
+  {
+    "phrase": "the {0} {1} for {2}",
+    "phrase_data": [
+      ["cutest", "coolest", "hottest", "craziest"],
+      ["workout sets", "phone cases"],
+      ["spring", "summer", "fall", "winter", "cuffing season", "your next vacation"]
+    ],
+    "hashtags": ["fyp", "explorepage", "love", "cute", "shopping"]
+  },
+  {
+    "phrase": "pov: you found the best {0} in {1} that's perfect for {2}",
+    "phrase_data": [
+      ["restaurant", "bar", "cafe", "store", "museum"],
+      ["nyc", "sf", "seattle", "la", "seoul", "london"],
+      ["relaxing", "doodling", "coworking", "napping", "doing your taxes", "crying"]
+    ],
+    "hashtags": ["fyp", "travel", "food", "explorepage", "inspo"]
+  },
+  {
+    "phrase": "grwm to {0}",
+    "phrase_data": [
+      ["go to the pool", "get laid off", "break up with my cheating bf", "go on a first date"]
+    ],
+    "hashtags": ["fyp", "explorepage", "grwm", "summer", "beauty", "yap"]
+  }
+]
