@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Page from './Page.jsx'
-import { setIndex } from './store.js'
+import Score from './Score.jsx'
+import { setIndex, playerAction } from './store.js'
 
 const PAGES_BEFORE = 1
 const PAGES_AFTER = 2
@@ -30,7 +31,13 @@ export default function App() {
       const h = el.clientHeight
       const slot = Math.round(el.scrollTop / h)
       const newIndex = currentIndex + (slot - PAGES_BEFORE)
-      if (newIndex !== currentIndex) dispatch(setIndex(newIndex))
+      if (newIndex !== currentIndex) {
+        dispatch(playerAction({
+          type: 'scroll',
+          direction: newIndex > currentIndex ? 'down' : 'up',
+        }))
+        dispatch(setIndex(newIndex))
+      }
     }
     const onScroll = () => {
       clearTimeout(t)
@@ -44,14 +51,17 @@ export default function App() {
   }, [dispatch, currentIndex])
 
   return (
-    <div ref={containerRef} className="feed">
-      {Array.from({ length: WINDOW }, (_, slot) => (
-        <Page
-          key={currentIndex - PAGES_BEFORE + slot}
-          index={currentIndex - PAGES_BEFORE + slot}
-          active={slot === PAGES_BEFORE}
-        />
-      ))}
-    </div>
+    <>
+      <Score />
+      <div ref={containerRef} className="feed">
+        {Array.from({ length: WINDOW }, (_, slot) => (
+          <Page
+            key={currentIndex - PAGES_BEFORE + slot}
+            index={currentIndex - PAGES_BEFORE + slot}
+            active={slot === PAGES_BEFORE}
+          />
+        ))}
+      </div>
+    </>
   )
 }

@@ -1,7 +1,13 @@
 [
   {
-    "id": "scroll",
+    "id": "scroll_down",
     "display_text": "SCROLL",
+    "time_bounds": [10, 20],
+    "params": { "direction": "down" }
+  },
+  {
+    "id": "like",
+    "display_text": "LIKE",
     "time_bounds": [10, 20]
   }
 ]
