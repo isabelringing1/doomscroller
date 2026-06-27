@@ -1,14 +1,21 @@
+import { useSelector } from 'react-redux'
 import Instruction from './Instruction.jsx'
 
 export default function Instructions({ instructions, duration, active, pageIndex }) {
-  return instructions.map((instruction) => (
+  const session = useSelector((s) => s.game.instructionSession)
+  const instructionIndex = session?.pageIndex === pageIndex ? session.instructionIndex : 0
+  const instruction = instructions[instructionIndex]
+
+  if (!instruction) return null
+
+  return (
     <Instruction
-      key={instruction.type.id}
+      key={`${pageIndex}-${instructionIndex}-${instruction.type.id}`}
       type={instruction.type}
       timePercent={instruction.timePercent}
       duration={duration}
       active={active}
       pageIndex={pageIndex}
     />
-  ))
+  )
 }

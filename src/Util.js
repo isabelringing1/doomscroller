@@ -36,10 +36,20 @@ export function generateCaption() {
 export function generateInstructions(index) {
   const type = instructionTypes[pickInstructionTypeIndex(index, instructionTypes.length)]
 
-  return [
+  var instructions = [
     {
       type,
       timePercent: rollInstructionTimePercent(index, type.time_bounds, type.id),
     },
   ]
+
+  if (type.id !== 'scroll_down') {
+    const scrollDownType = instructionTypes.find((t) => t.id === 'scroll_down')
+    instructions.push({
+      type: scrollDownType,
+      timePercent: rollInstructionTimePercent(index, scrollDownType.time_bounds, 'scroll_down'),
+    })
+  }
+
+  return instructions
 }

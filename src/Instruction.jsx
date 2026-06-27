@@ -1,11 +1,20 @@
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { instructionVisible } from './store.js'
 
 export default function Instruction({ type, timePercent, duration, active, pageIndex }) {
   const dispatch = useDispatch()
+  const session = useSelector((s) => s.game.instructionSession)
+  const isScrollingDown = useSelector((s) => s.feed.isScrollingDown)
+  const feedback = session?.pageIndex === pageIndex ? session.feedback : null
   const [visible, setVisible] = useState(false)
   const [runId, setRunId] = useState(0)
+
+  const isScrollDownInstruction =
+    type.id === 'scroll_down'
+    && session?.pageIndex === pageIndex
+    && session?.visible
+    && session?.status === 'pending'
 
   useEffect(() => {
     if (!active) {
@@ -28,11 +37,23 @@ export default function Instruction({ type, timePercent, duration, active, pageI
     dispatch(instructionVisible({ pageIndex }))
   }, [active, visible, pageIndex, dispatch])
 
+  useEffect(() => {
+    if (session?.pageIndex === pageIndex && session.status === 'completed') {
+      setVisible(false)
+    }
+  }, [session?.pageIndex, session?.status, pageIndex])
+
   if (!active) return null
+
+  const feedbackClass = isScrollingDown && isScrollDownInstruction && visible
+    ? ' instruction-text--success'
+    : feedback === 'success'
+      ? ' instruction-text--success'
+      : ''
 
   return (
     <div className={`instruction-overlay${visible ? ' instruction-overlay--visible' : ''}`}>
-      <span className="instruction-text">{type.display_text}</span>
+      <span className={`instruction-text${feedbackClass}`}>{type.display_text}</span>
     </div>
   )
 }
