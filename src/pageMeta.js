@@ -1,10 +1,12 @@
-export function durationForIndex(index) {
-  const t = Math.abs(Math.sin((index + 1) * 12.9898) * 43758.5453) % 1
+export const MIN_PAGE_INDEX = 0
+
+export function durationForIndex(index, generation = 0) {
+  const t = Math.abs(Math.sin((index + 1 + generation * 997) * 12.9898) * 43758.5453) % 1
   return 5 + t * 10
 }
 
-function stableUnit(index, salt) {
-  const seed = `${index}:${salt}`
+function stableUnit(index, salt, generation = 0) {
+  const seed = `${generation}:${index}:${salt}`
   let hash = 0
   for (let i = 0; i < seed.length; i++) {
     hash = (hash * 31 + seed.charCodeAt(i)) | 0
@@ -12,11 +14,11 @@ function stableUnit(index, salt) {
   return Math.abs(Math.sin(hash * 12.9898) * 43758.5453) % 1
 }
 
-export function rollInstructionTimePercent(index, timeBounds, salt) {
+export function rollInstructionTimePercent(index, timeBounds, salt, generation = 0) {
   const [min, max] = timeBounds
-  return min + stableUnit(index, salt) * (max - min)
+  return min + stableUnit(index, salt, generation) * (max - min)
 }
 
-export function pickInstructionTypeIndex(index, typeCount) {
-  return Math.floor(stableUnit(index, 'instruction-type') * typeCount)
+export function pickInstructionTypeIndex(index, typeCount, generation = 0) {
+  return Math.floor(stableUnit(index, 'instruction-type', generation) * typeCount)
 }

@@ -1,14 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
-import { durationForIndex } from './pageMeta.js'
+import { useEffect, useState } from 'react'
 
-export default function PageDuration({ index, active }) {
-  const duration = useMemo(() => durationForIndex(index), [index])
+export default function PageDuration({ active, duration }) {
   const [runId, setRunId] = useState(0)
 
   useEffect(() => {
     if (!active) return
     setRunId((id) => id + 1)
-  }, [active])
+  }, [active, duration])
 
   return (
     <div className="page-duration">

@@ -5,16 +5,20 @@ import { instructionVisible } from './store.js'
 export default function Instruction({ type, timePercent, duration, active, pageIndex }) {
   const dispatch = useDispatch()
   const session = useSelector((s) => s.game.instructionSession)
-  const isScrollingDown = useSelector((s) => s.feed.isScrollingDown)
+  const scrollDirection = useSelector((s) => s.feed.scrollDirection)
   const feedback = session?.pageIndex === pageIndex ? session.feedback : null
   const [visible, setVisible] = useState(false)
   const [runId, setRunId] = useState(0)
 
-  const isScrollDownInstruction =
-    type.id === 'scroll_down'
+  const isActiveScrollInstruction =
+    (type.id === 'scroll_down' || type.id === 'scroll_up')
     && session?.pageIndex === pageIndex
     && session?.visible
     && session?.status === 'pending'
+
+  const scrollDirectionMatches =
+    (type.id === 'scroll_down' && scrollDirection === 'down')
+    || (type.id === 'scroll_up' && scrollDirection === 'up')
 
   useEffect(() => {
     if (!active) {
@@ -45,7 +49,7 @@ export default function Instruction({ type, timePercent, duration, active, pageI
 
   if (!active) return null
 
-  const feedbackClass = isScrollingDown && isScrollDownInstruction && visible
+  const feedbackClass = scrollDirectionMatches && isActiveScrollInstruction && visible
     ? ' instruction-text--success'
     : feedback === 'success'
       ? ' instruction-text--success'

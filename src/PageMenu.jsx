@@ -9,8 +9,9 @@ export default function PageMenu({ index, active }) {
   const { liked, saved } = useSelector(
     (s) => s.game.pageEngagement[index] ?? { liked: false, saved: false },
   )
+  const feedGeneration = useSelector((s) => s.feed.feedGeneration)
   const name = `@user_${index}`
-  const caption = useMemo(() => generateCaption(), [index])
+  const caption = useMemo(() => generateCaption(), [index, feedGeneration])
 
   const onButton = (name) => {
     if (!active) return

@@ -9,9 +9,16 @@ import { instructionPageActive } from './store.js'
 
 export default function Page({ index, active }) {
   const dispatch = useDispatch()
+  const feedGeneration = useSelector((s) => s.feed.feedGeneration)
   const failureOverlay = useSelector((s) => s.game.instructionFailureOverlay)
-  const instructions = useMemo(() => generateInstructions(index), [index])
-  const duration = useMemo(() => durationForIndex(index), [index])
+  const instructions = useMemo(
+    () => generateInstructions(index, feedGeneration),
+    [index, feedGeneration],
+  )
+  const duration = useMemo(
+    () => durationForIndex(index, feedGeneration),
+    [index, feedGeneration],
+  )
   const showFailureOverlay = failureOverlay?.pageIndex === index
 
   useEffect(() => {
@@ -33,7 +40,7 @@ export default function Page({ index, active }) {
           <span className="instruction-text instruction-text--failure">{failureOverlay.displayText}</span>
         </div>
       )}
-      <PageDuration index={index} active={active} />
+      <PageDuration index={index} active={active} duration={duration} />
     </div>
   )
 }

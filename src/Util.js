@@ -33,13 +33,13 @@ export function generateCaption() {
   return `${phrase} ${hashtags.map((tag) => `#${tag}`).join(' ')}`
 }
 
-export function generateInstructions(index) {
-  const type = instructionTypes[pickInstructionTypeIndex(index, instructionTypes.length)]
+export function generateInstructions(index, generation = 0) {
+  const type = instructionTypes[pickInstructionTypeIndex(index, instructionTypes.length, generation)]
 
   var instructions = [
     {
       type,
-      timePercent: rollInstructionTimePercent(index, type.time_bounds, type.id),
+      timePercent: rollInstructionTimePercent(index, type.time_bounds, type.id, generation),
     },
   ]
 
@@ -47,7 +47,7 @@ export function generateInstructions(index) {
     const scrollDownType = instructionTypes.find((t) => t.id === 'scroll_down')
     instructions.push({
       type: scrollDownType,
-      timePercent: rollInstructionTimePercent(index, scrollDownType.time_bounds, 'scroll_down'),
+      timePercent: rollInstructionTimePercent(index, scrollDownType.time_bounds, 'scroll_down', generation),
     })
   }
 

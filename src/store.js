@@ -1,14 +1,24 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
 import { instructionListener, setupInstructionJudge } from './instructionJudge.js'
+import { MIN_PAGE_INDEX } from './pageMeta.js'
+
+const clampPageIndex = (index) => Math.max(MIN_PAGE_INDEX, index)
 
 const feedSlice = createSlice({
   name: 'feed',
-  initialState: { currentIndex: 0, isScrollingDown: false },
+  initialState: { currentIndex: 0, scrollDirection: null, titleDismissed: false, feedGeneration: 0 },
   reducers: {
-    next: (s) => { s.currentIndex += 1 },
-    prev: (s) => { s.currentIndex -= 1 },
-    setIndex: (s, { payload }) => { s.currentIndex = payload },
-    setScrollingDown: (s, { payload }) => { s.isScrollingDown = payload },
+    next: (s) => { s.currentIndex = clampPageIndex(s.currentIndex + 1) },
+    prev: (s) => { s.currentIndex = clampPageIndex(s.currentIndex - 1) },
+    setIndex: (s, { payload }) => { s.currentIndex = clampPageIndex(payload) },
+    setScrollDirection: (s, { payload }) => { s.scrollDirection = payload },
+    dismissTitle: (s) => { s.titleDismissed = true },
+    resetFeed: (s) => {
+      s.currentIndex = 0
+      s.scrollDirection = null
+      s.titleDismissed = false
+      s.feedGeneration += 1
+    },
   },
 })
 
@@ -17,12 +27,14 @@ const gameSlice = createSlice({
   initialState: {
     score: 0,
     health: 1,
+    gameStarted: false,
     instructionSession: null,
     pageEngagement: {},
     instructionFailureOverlay: null,
   },
   reducers: {
     playerAction: () => {},
+    startGame: (s) => { s.gameStarted = true },
     togglePageEngagement: (s, { payload: { pageIndex, name } }) => {
       if (name !== 'like' && name !== 'save') return
       const field = name === 'like' ? 'liked' : 'saved'
@@ -86,12 +98,22 @@ const gameSlice = createSlice({
       s.instructionSession.status = 'completed'
       s.instructionSession.visible = false
     },
+    startOver: (s) => {
+      s.score = 0
+      s.health = 1
+      s.gameStarted = false
+      s.instructionSession = null
+      s.pageEngagement = {}
+      s.instructionFailureOverlay = null
+    },
   },
 })
 
-export const { next, prev, setIndex, setScrollingDown } = feedSlice.actions
+export const { next, prev, setIndex, setScrollDirection, dismissTitle, resetFeed } = feedSlice.actions
 export const {
   playerAction,
+  startGame,
+  startOver,
   damageHealth,
   togglePageEngagement,
   instructionPageActive,

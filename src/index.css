@@ -56,6 +56,53 @@ html, body, #root {
 
 .feed::-webkit-scrollbar { display: none; }
 
+.feed--title {
+  overflow: hidden;
+}
+
+.title-page {
+  height: 100dvh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: max(2.5dvh, env(safe-area-inset-top, 0px));
+  box-sizing: border-box;
+  background: #e5e5e5;
+  color: #000;
+  justify-content: center;
+}
+
+.title-page-heading {
+  margin: 0;
+  font-size: 8vw;
+  font-weight: 700;
+}
+
+.title-page-high-score {
+  margin: 2dvh 0 0;
+  font-size: 5vw;
+  font-weight: 600;
+}
+
+.title-page-start {
+  margin-top: 3dvh;
+  padding: 12px 32px;
+  border: 2px solid #000000;
+  border-radius: 8px;
+  background: transparent;
+  color: #000000;
+  font: inherit;
+  font-size: 5vw;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: lowercase;
+}
+
+.title-page-start:active {
+  transform: scale(0.96);
+}
+
 .page {
   position: relative;
   height: 100dvh;
@@ -196,4 +243,20 @@ html, body, #root {
   margin: 0;
   font-size: 6vw;
   font-weight: 600;
+}
+.game-over-start-over {
+  margin-top: 2dvh;
+  padding: 12px 28px;
+  border: 2px solid #000;
+  border-radius: 8px;
+  background: transparent;
+  color: #000;
+  font: inherit;
+  font-size: 5vw;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.game-over-start-over:active {
+  transform: scale(0.96);
 }
