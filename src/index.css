@@ -10,6 +10,7 @@ html, body, #root {
 :root {
   --browser-ui-bottom: 0px;
   --page-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--browser-ui-bottom));
+  --color-success: #22c55e;
 }
 
 .score {
@@ -20,6 +21,29 @@ html, body, #root {
   font-weight: 600;
   font-size: 4.5vw;
   pointer-events: none;
+  color: #fff;
+}
+
+@keyframes score-pulse {
+  0%, 100% { color: #fff; }
+  50% { color: var(--color-success); }
+}
+
+.score--pulse {
+  animation: score-pulse 0.4s ease-in-out;
+}
+
+.score-value {
+  display: inline-block;
+}
+
+@keyframes score-value-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.5); }
+}
+
+.score-value--pulse {
+  animation: score-value-pulse 0.4s ease-in-out;
 }
 
 .feed {
@@ -129,7 +153,7 @@ html, body, #root {
 }
 
 .instruction-text--success {
-  color: #22c55e;
+  color: var(--color-success);
 }
 
 .instruction-text--failure {
