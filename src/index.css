@@ -110,8 +110,15 @@ button{
   font-weight: 600;
 }
 
-.title-page-start {
+.title-page-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5dvh;
   margin-top: 3dvh;
+}
+
+.title-page-start {
   padding: 12px 32px;
 }
 

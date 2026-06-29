@@ -36,6 +36,7 @@ const gameSlice = createSlice({
     score: 0,
     health: 1,
     gameStarted: false,
+    zenMode: false,
     gameStartedAt: null,
     gameDurationMs: null,
     instructionSession: null,
@@ -43,7 +44,10 @@ const gameSlice = createSlice({
   },
   reducers: {
     playerAction: () => {},
-    startGame: (s) => { s.gameStarted = true },
+    startGame: (s, { payload }) => {
+      s.gameStarted = true
+      s.zenMode = payload?.zenMode ?? false
+    },
     beginGameplay: (s) => {
       s.gameStartedAt = Date.now()
       s.gameDurationMs = null
@@ -117,6 +121,7 @@ const gameSlice = createSlice({
       s.score = 0
       s.health = 1
       s.gameStarted = false
+      s.zenMode = false
       s.gameStartedAt = null
       s.gameDurationMs = null
       s.instructionSession = null

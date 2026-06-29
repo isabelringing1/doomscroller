@@ -18,6 +18,7 @@ export default function Instruction({
 }) {
   const dispatch = useDispatch()
   const session = useSelector((s) => s.game.instructionSession)
+  const zenMode = useSelector((s) => s.game.zenMode)
   const scrollDirection = useSelector((s) => s.feed.scrollDirection)
   const [timerReady, setTimerReady] = useState(false)
   const [runId, setRunId] = useState(0)
@@ -106,7 +107,8 @@ export default function Instruction({
     feedback === 'success' || (scrollDirectionMatches && isActiveScrollInstruction)
   const fadeOutDurationMs = timeLimit ?? DEFAULT_FADE_OUT_MS
   const showFadeOut =
-    fadeOutActive
+    !zenMode
+    && fadeOutActive
     && !isSuccess
     && feedback !== 'failure'
     && !isCompleted

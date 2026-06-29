@@ -11,9 +11,14 @@ export default function TitlePage() {
       <h1 className="title-page-heading">DoomScroller</h1>
       <div className="title-page-subheading">Relax with this immersive and engaging simulation of consuming content.</div>
       
-      <button type="button" className="title-page-start" onClick={() => dispatch(startGame())}>
-        Start
-      </button>
+      <div className="title-page-buttons">
+        <button type="button" className="title-page-start" onClick={() => dispatch(startGame({ zenMode: false }))}>
+          Start Game
+        </button>
+        <button type="button" className="title-page-start" onClick={() => dispatch(startGame({ zenMode: true }))}>
+          Zen Mode
+        </button>
+      </div>
 
       {highScore > 0 && <p className="title-page-high-score">High Score: {highScore}</p>}
     </div>

@@ -65,9 +65,9 @@ export function generateCaption() {
   return { phrase, hashtags }
 }
 
-export function generateInstructions(index, generation = 0) {
+export function generateInstructions(index, generation = 0, zenMode = false) {
   const type = actionableTypes[pickInstructionTypeIndex(index, actionableTypes.length, generation)]
-  const scalar = timeScalarForIndex(index)
+  const scalar = zenMode ? 1 : timeScalarForIndex(index)
 
   const buildInstruction = (instructionType, salt, timeBounds) => ({
     type: instructionType,

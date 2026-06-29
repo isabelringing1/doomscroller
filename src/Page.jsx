@@ -10,9 +10,10 @@ import { instructionPageActive } from './store.js'
 export default function Page({ index, active }) {
   const dispatch = useDispatch()
   const feedGeneration = useSelector((s) => s.feed.feedGeneration)
+  const zenMode = useSelector((s) => s.game.zenMode)
   const instructions = useMemo(
-    () => generateInstructions(index, feedGeneration),
-    [index, feedGeneration],
+    () => generateInstructions(index, feedGeneration, zenMode),
+    [index, feedGeneration, zenMode],
   )
   const duration = useMemo(
     () => durationForIndex(index, feedGeneration),

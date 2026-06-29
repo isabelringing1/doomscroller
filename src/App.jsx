@@ -32,6 +32,17 @@ export default function App() {
     )
   }
 
+  function tryRevertZenScroll(el, h) {
+    const { instructionSession, zenMode } = store.getState().game
+    if (!zenMode || !hadActiveJudgeable(instructionSession)) return false
+    if (instructionSession.states.some((s) => s.feedback === 'success')) return false
+    ignoreScrollRef.current = true
+    el.scrollTop = PAGES_BEFORE * h
+    lastScrollTopRef.current = el.scrollTop
+    requestAnimationFrame(() => { ignoreScrollRef.current = false })
+    return true
+  }
+
   function dispatchScrollAction(direction, scrollTop, h) {
     const slot = Math.round(scrollTop / h)
     const rawIndex = currentIndex + (slot - PAGES_BEFORE)
@@ -41,6 +52,11 @@ export default function App() {
       direction,
       pendingIndex: newIndex !== currentIndex ? newIndex : undefined,
     }))
+    const el = containerRef.current
+    if (el && tryRevertZenScroll(el, h)) {
+      scrollJudgedRef.current = false
+      return
+    }
     const session = store.getState().game.instructionSession
     if (hadActiveJudgeable(session) || newIndex !== currentIndex) {
       scrollJudgedRef.current = true
@@ -123,6 +139,10 @@ export default function App() {
             pendingIndex: newIndex,
           }))
           scrollJudgedRef.current = true
+          if (tryRevertZenScroll(el, h)) {
+            scrollJudgedRef.current = false
+            return
+          }
         }
         const hasFeedback = store.getState().game.instructionSession?.states?.some((s) => s.feedback)
         if (!hasFeedback) {

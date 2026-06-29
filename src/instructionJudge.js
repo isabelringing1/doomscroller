@@ -45,7 +45,8 @@ export function setupInstructionJudge({
     actionCreator: instructionVisible,
     effect: async (action, api) => {
       const { pageIndex, instructionIndex } = action.payload
-      const session = api.getState().game.instructionSession
+      const { zenMode, instructionSession: session } = api.getState().game
+      if (zenMode) return
       if (!session || session.pageIndex !== pageIndex) return
 
       const instruction = session.instructions[instructionIndex]
@@ -68,7 +69,7 @@ export function setupInstructionJudge({
   instructionListener.startListening({
     actionCreator: playerAction,
     effect: (action, api) => {
-      const { health, instructionSession: session } = api.getState().game
+      const { health, zenMode, instructionSession: session } = api.getState().game
       if (health <= 0) return
       if (session?.status === 'completed') return
 
@@ -82,7 +83,7 @@ export function setupInstructionJudge({
         }
 
         if (judgeable.length === 0) {
-          if (onlyUnjudgeableVisible(session)) {
+          if (!zenMode && onlyUnjudgeableVisible(session)) {
             fail(getActiveVisible(session).map(({ i }) => i))
           }
           return
@@ -104,11 +105,15 @@ export function setupInstructionJudge({
           return
         }
 
-        fail(judgeable.map(({ i }) => i))
+        if (!zenMode) {
+          fail(judgeable.map(({ i }) => i))
+        }
         return
       }
 
-      api.dispatch(damageHealth())
+      if (!zenMode) {
+        api.dispatch(damageHealth())
+      }
     },
   })
 }
