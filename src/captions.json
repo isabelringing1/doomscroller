@@ -25,8 +25,9 @@
     "hashtags": ["fyp", "explorepage", "grwm", "summer", "beauty", "yap"]
   },
   {
-    "phrase": "wait for the reaction... the {0} video you’ll see all day {1}",
+    "phrase": "wait {0}... the {1} video you’ll see all day {2}",
     "phrase_data": [
+      ["for the reaction", "til the end"],
       ["most heartwarming", "most adorable", "cutest", "saddest"],
       ["❤️", "💔", "💖✨", "💕"]
     ],
@@ -51,7 +52,7 @@
   {
     "phrase": "that one friend who {0}",
     "phrase_data": [
-      ["has a crush on your bf", "low key hates yuo", "always has her phone at 0%", "couldn't lie to save her life"]
+      ["has a crush on your bf", "low key hates you", "always has her phone at 0%", "couldn't lie to save her life"]
     ],
     "hashtags": ["fyp", "explorepage", "skit", "funny", "relationshipgoals", "comedy"]
   }

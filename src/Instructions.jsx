@@ -8,6 +8,7 @@ export default function Instructions({ instructions, duration, active, pageIndex
           key={`${pageIndex}-${instruction.type.id}-${instructionIndex}`}
           type={instruction.type}
           timePercent={instruction.timePercent}
+          timeLimit={instruction.timeLimit}
           duration={duration}
           active={active}
           pageIndex={pageIndex}

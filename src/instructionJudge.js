@@ -49,7 +49,7 @@ export function setupInstructionJudge({
       if (!session || session.pageIndex !== pageIndex) return
 
       const instruction = session.instructions[instructionIndex]
-      const timeLimit = instruction.type.time_limit
+      const timeLimit = instruction.timeLimit
       if (!timeLimit || instruction.type.unjudgeable) return
 
       await api.delay(timeLimit)

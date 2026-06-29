@@ -1,6 +1,6 @@
 import instructionTypes from './Instructions.json'
 import captions from './captions.json'
-import { pickInstructionTypeIndex, rollInstructionTimePercent } from './pageMeta.js'
+import { pickInstructionTypeIndex, rollInstructionTimePercent, timeScalarForIndex } from './pageMeta.js'
 
 const actionableTypes = instructionTypes.filter((t) => !t.unjudgeable)
 const unjudgeableType = instructionTypes.find((t) => t.unjudgeable)
@@ -67,23 +67,23 @@ export function generateCaption() {
 
 export function generateInstructions(index, generation = 0) {
   const type = actionableTypes[pickInstructionTypeIndex(index, actionableTypes.length, generation)]
+  const scalar = timeScalarForIndex(index)
+
+  const buildInstruction = (instructionType, salt, timeBounds) => ({
+    type: instructionType,
+    timePercent: rollInstructionTimePercent(index, timeBounds, salt, generation) * scalar,
+    timeLimit: instructionType.time_limit != null ? instructionType.time_limit * scalar : undefined,
+  })
 
   const instructions = [
-    {
-      type: unjudgeableType,
-      timePercent: rollInstructionTimePercent(index, unjudgeableType.time_bounds, unjudgeableType.id, generation),
-    },
-    {
-      type,
-      timePercent: rollInstructionTimePercent(index, type.time_bounds, type.id, generation),
-    },
+    buildInstruction(unjudgeableType, unjudgeableType.id, unjudgeableType.time_bounds),
+    buildInstruction(type, type.id, type.time_bounds),
   ]
 
   if (type.id !== 'scroll_down') {
-    instructions.push({
-      type: scrollDownType,
-      timePercent: rollInstructionTimePercent(index, scrollDownType.time_bounds, 'scroll_down', generation),
-    })
+    instructions.push(
+      buildInstruction(scrollDownType, 'scroll_down', scrollDownType.time_bounds),
+    )
   }
 
   return instructions

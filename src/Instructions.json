@@ -21,5 +21,13 @@
     "time_limit": 2000,
     "blocking": true,
     "position": { "vw": 80, "dvh": 30, "anchor": "center right" }
+  },
+  {
+    "id": "save",
+    "display_text": "Save",
+    "time_bounds": [30, 30],
+    "time_limit": 2000,
+    "blocking": true,
+    "position": { "vw": 80, "dvh": 16, "anchor": "center right" }
   }
 ]

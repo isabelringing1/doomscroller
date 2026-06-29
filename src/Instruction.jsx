@@ -4,10 +4,12 @@ import { anchorAlign, isInstructionBlocked } from './Util.js'
 import { instructionVisible } from './store.js'
 
 const FADE_MS = 400
+const DEFAULT_FADE_OUT_MS = 2000
 
 export default function Instruction({
   type,
   timePercent,
+  timeLimit,
   duration,
   active,
   pageIndex,
@@ -20,7 +22,7 @@ export default function Instruction({
   const [timerReady, setTimerReady] = useState(false)
   const [runId, setRunId] = useState(0)
   const [shown, setShown] = useState(false)
-  const [timeLimitActive, setTimeLimitActive] = useState(false)
+  const [fadeOutActive, setFadeOutActive] = useState(false)
   const [exiting, setExiting] = useState(false)
 
   const sessionMatchesPage = session?.pageIndex === pageIndex
@@ -68,7 +70,7 @@ export default function Instruction({
       setExiting(false)
       return
     }
-    setTimeLimitActive(false)
+    setFadeOutActive(false)
     setShown(false)
     setExiting(true)
     const timer = setTimeout(() => {
@@ -79,13 +81,13 @@ export default function Instruction({
   }, [isCompleted, type.unjudgeable])
 
   useEffect(() => {
-    if (!shown || !type.time_limit || isCompleted || exiting) {
-      setTimeLimitActive(false)
+    if (!shown || isCompleted || exiting) {
+      setFadeOutActive(false)
       return
     }
-    const timer = setTimeout(() => setTimeLimitActive(true), FADE_MS)
+    const timer = setTimeout(() => setFadeOutActive(true), FADE_MS)
     return () => clearTimeout(timer)
-  }, [shown, type.time_limit, isCompleted, exiting, runId])
+  }, [shown, isCompleted, exiting, runId])
 
   useEffect(() => {
     if (!visible) {
@@ -102,9 +104,9 @@ export default function Instruction({
 
   const isSuccess =
     feedback === 'success' || (scrollDirectionMatches && isActiveScrollInstruction)
-  const showTimeLimitFade =
-    type.time_limit
-    && timeLimitActive
+  const fadeOutDurationMs = timeLimit ?? DEFAULT_FADE_OUT_MS
+  const showFadeOut =
+    fadeOutActive
     && !isSuccess
     && feedback !== 'failure'
     && !isCompleted
@@ -125,8 +127,8 @@ export default function Instruction({
       style={{ left: `${position.vw}vw`, bottom: `${position.dvh}dvh` }}
     >
       <span
-        className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${showTimeLimitFade ? ' instruction-text--time-limit' : ''}`}
-        style={showTimeLimitFade ? { animationDuration: `${type.time_limit}ms` } : undefined}
+        className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${showFadeOut ? ' instruction-text--fade-out' : ''}`}
+        style={showFadeOut ? { animationDuration: `${fadeOutDurationMs}ms` } : undefined}
       >
         {type.display_text}
       </span>

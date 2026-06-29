@@ -1,5 +1,9 @@
 export const MIN_PAGE_INDEX = 0
 
+export function timeScalarForIndex(index) {
+  return Math.max(0, 1 - 0.05 * Math.floor(index / 3))
+}
+
 export function durationForIndex(index, generation = 0) {
   const t = Math.abs(Math.sin((index + 1 + generation * 997) * 12.9898) * 43758.5453) % 1
   return 10;
