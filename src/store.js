@@ -86,9 +86,7 @@ const gameSlice = createSlice({
       const state = session.states[instructionIndex]
       if (!state || state.status !== 'pending') return
       s.score += 1
-      if (session.instructions[instructionIndex].type.id !== 'scroll_down') {
-        state.feedback = 'success'
-      }
+      state.feedback = 'success'
     },
     instructionFailed: (s, { payload: { instructionIndices } }) => {
       const session = s.instructionSession

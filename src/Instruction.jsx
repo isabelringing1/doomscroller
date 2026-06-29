@@ -85,7 +85,7 @@ export default function Instruction({
   return (
     <div
       className={`instruction instruction--anchor-${align}`}
-      style={{ left: `${position.vw}vw`, top: `${position.vh}vh` }}
+      style={{ left: `${position.vw}vw`, bottom: `${position.dvh}dvh` }}
     >
       <span className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}`}>
         {type.display_text}

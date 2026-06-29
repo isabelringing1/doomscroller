@@ -5,15 +5,19 @@ export const instructionListener = createListenerMiddleware()
 
 const FEEDBACK_MS = 200
 
-function getActiveJudgeable(session) {
+function getActiveVisible(session) {
   return session.instructions
     .map((instruction, i) => ({ instruction, i, state: session.states[i] }))
-    .filter(
-      ({ instruction, state }) =>
-        state.status === 'pending'
-        && state.visible
-        && !instruction.type.unjudgeable,
-    )
+    .filter(({ state }) => state.status === 'pending' && state.visible)
+}
+
+function getActiveJudgeable(session) {
+  return getActiveVisible(session).filter(({ instruction }) => !instruction.type.unjudgeable)
+}
+
+function onlyUnjudgeableVisible(session) {
+  const active = getActiveVisible(session)
+  return active.length > 0 && active.every(({ instruction }) => instruction.type.unjudgeable)
 }
 
 export function setupInstructionJudge({
@@ -37,34 +41,8 @@ export function setupInstructionJudge({
       if (session) {
         const judgeable = getActiveJudgeable(session)
 
-        if (judgeable.length === 0) return
-
-        const match = judgeable.find(({ instruction }) => {
-          const matcher = instructionMatchers[instruction.type.id]
-          return matcher?.(action.payload, instruction, { state: api.getState() })
-        })
-
-        if (match) {
-          const { instruction, i } = match
-          const isScrollDown =
-            instruction.type.id === 'scroll_down'
-            && action.payload.type === 'scroll'
-            && action.payload.direction === 'down'
-          api.dispatch(instructionSucceeded({ instructionIndex: i }))
-          if (isScrollDown) {
-            api.dispatch(instructionCompleted({ instructionIndex: i }))
-            return
-          }
-          setTimeout(() => {
-            if (api.getState().game.instructionSession?.states[i]?.feedback === 'success') {
-              api.dispatch(instructionCompleted({ instructionIndex: i }))
-            }
-          }, FEEDBACK_MS)
-          return
-        }
-
-        const fail = () => {
-          api.dispatch(instructionFailed({ instructionIndices: judgeable.map(({ i }) => i) }))
+        const fail = (instructionIndices) => {
+          api.dispatch(instructionFailed({ instructionIndices }))
           setTimeout(() => {
             api.dispatch(damageHealth())
             api.dispatch(clearInstructionFeedback())
@@ -73,7 +51,31 @@ export function setupInstructionJudge({
             }
           }, FEEDBACK_MS)
         }
-        fail()
+
+        if (judgeable.length === 0) {
+          if (onlyUnjudgeableVisible(session)) {
+            fail(getActiveVisible(session).map(({ i }) => i))
+          }
+          return
+        }
+
+        const match = judgeable.find(({ instruction }) => {
+          const matcher = instructionMatchers[instruction.type.id]
+          return matcher?.(action.payload, instruction, { state: api.getState() })
+        })
+
+        if (match) {
+          const { i } = match
+          api.dispatch(instructionSucceeded({ instructionIndex: i }))
+          setTimeout(() => {
+            if (api.getState().game.instructionSession?.states[i]?.feedback === 'success') {
+              api.dispatch(instructionCompleted({ instructionIndex: i }))
+            }
+          }, FEEDBACK_MS)
+          return
+        }
+
+        fail(judgeable.map(({ i }) => i))
         return
       }
 

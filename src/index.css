@@ -205,6 +205,7 @@ button{
 
 .instruction {
   position: absolute;
+  background: black;
 }
 
 .instruction--anchor-center {
@@ -222,7 +223,7 @@ button{
 .instruction-text {
   display: block;
   color: #fff;
-  font-size: 10vw;
+  font-size: 7vw;
   font-weight: 400;
   white-space: nowrap;
   opacity: 0;

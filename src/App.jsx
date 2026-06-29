@@ -21,6 +21,31 @@ export default function App() {
   const containerRef = useRef(null)
   const ignoreScrollRef = useRef(false)
   const lastScrollTopRef = useRef(null)
+  const scrollJudgedRef = useRef(false)
+
+  function hadActiveJudgeable(session) {
+    return session?.states?.some(
+      (state, i) =>
+        state.status === 'pending'
+        && state.visible
+        && !session.instructions[i].type.unjudgeable,
+    )
+  }
+
+  function dispatchScrollAction(direction, scrollTop, h) {
+    const slot = Math.round(scrollTop / h)
+    const rawIndex = currentIndex + (slot - PAGES_BEFORE)
+    const newIndex = Math.max(MIN_PAGE_INDEX, rawIndex)
+    dispatch(playerAction({
+      type: 'scroll',
+      direction,
+      pendingIndex: newIndex !== currentIndex ? newIndex : undefined,
+    }))
+    const session = store.getState().game.instructionSession
+    if (hadActiveJudgeable(session) || newIndex !== currentIndex) {
+      scrollJudgedRef.current = true
+    }
+  }
 
   useEffect(() => {
     if (!gameStarted || titleDismissed) return
@@ -91,11 +116,14 @@ export default function App() {
       }
 
       if (newIndex !== currentIndex) {
-        dispatch(playerAction({
-          type: 'scroll',
-          direction: newIndex > currentIndex ? 'down' : 'up',
-          pendingIndex: newIndex,
-        }))
+        if (!scrollJudgedRef.current) {
+          dispatch(playerAction({
+            type: 'scroll',
+            direction: newIndex > currentIndex ? 'down' : 'up',
+            pendingIndex: newIndex,
+          }))
+          scrollJudgedRef.current = true
+        }
         const hasFeedback = store.getState().game.instructionSession?.states?.some((s) => s.feedback)
         if (!hasFeedback) {
           dispatch(setIndex(newIndex))
@@ -123,14 +151,19 @@ export default function App() {
 
       const scrollTop = el.scrollTop
       if (lastScrollTopRef.current !== null && scrollTop !== lastScrollTopRef.current) {
-        dispatch(setScrollDirection(scrollTop > lastScrollTopRef.current ? 'down' : 'up'))
+        const direction = scrollTop > lastScrollTopRef.current ? 'down' : 'up'
+        dispatch(setScrollDirection(direction))
+        if (!scrollJudgedRef.current) {
+          dispatchScrollAction(direction, scrollTop, h)
+        }
       }
       lastScrollTopRef.current = scrollTop
 
       clearTimeout(t)
       t = setTimeout(() => {
-        dispatch(setScrollDirection(null))
         sync()
+        dispatch(setScrollDirection(null))
+        scrollJudgedRef.current = false
       }, 80)
     }
 
