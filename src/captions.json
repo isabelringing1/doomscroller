@@ -47,5 +47,12 @@
       ["USA", "crunchy", "💥", "vlog"]
     ],
     "hashtags": ["fyp", "explorepage", "asmr", "sleep", "asmrtok", "yum"]
+  },
+  {
+    "phrase": "that one friend who {0}",
+    "phrase_data": [
+      ["has a crush on your bf", "low key hates yuo", "always has her phone at 0%", "couldn't lie to save her life"]
+    ],
+    "hashtags": ["fyp", "explorepage", "skit", "funny", "relationshipgoals", "comedy"]
   }
 ]

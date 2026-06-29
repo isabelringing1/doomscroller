@@ -10,7 +10,7 @@
     "id": "scroll_down",
     "display_text": "Scroll ↓",
     "time_bounds": [30, 30],
-    "time_limit": 4000,
+    "time_limit": 2000,
     "params": { "direction": "down" },
     "position": { "vw": 7, "dvh": 50, "anchor": "center left" }
   },
@@ -18,7 +18,7 @@
     "id": "like",
     "display_text": "Like",
     "time_bounds": [30, 30],
-    "time_limit": 4000,
+    "time_limit": 2000,
     "blocking": true,
     "position": { "vw": 80, "dvh": 30, "anchor": "center right" }
   }

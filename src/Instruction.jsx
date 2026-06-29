@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { anchorAlign, isInstructionBlocked } from './Util.js'
 import { instructionVisible } from './store.js'
 
+const FADE_MS = 400
+
 export default function Instruction({
   type,
   timePercent,
@@ -18,13 +20,17 @@ export default function Instruction({
   const [timerReady, setTimerReady] = useState(false)
   const [runId, setRunId] = useState(0)
   const [shown, setShown] = useState(false)
+  const [timeLimitActive, setTimeLimitActive] = useState(false)
+  const [exiting, setExiting] = useState(false)
 
   const sessionMatchesPage = session?.pageIndex === pageIndex
   const instructionState = sessionMatchesPage ? session.states[instructionIndex] : null
   const feedback = instructionState?.feedback ?? null
   const isCompleted = instructionState?.status === 'completed'
   const blocked = sessionMatchesPage && isInstructionBlocked(session, instructionIndex)
-  const visible = timerReady && !blocked
+  const timerVisible = timerReady && !blocked
+  const displayed = timerVisible || exiting
+  const visible = timerVisible
 
   const isActiveScrollInstruction =
     (type.id === 'scroll_down' || type.id === 'scroll_up')
@@ -58,25 +64,51 @@ export default function Instruction({
 
   useEffect(() => {
     if (type.unjudgeable) return
-    if (isCompleted) setTimerReady(false)
+    if (!isCompleted) {
+      setExiting(false)
+      return
+    }
+    setTimeLimitActive(false)
+    setShown(false)
+    setExiting(true)
+    const timer = setTimeout(() => {
+      setTimerReady(false)
+      setExiting(false)
+    }, FADE_MS)
+    return () => clearTimeout(timer)
   }, [isCompleted, type.unjudgeable])
 
   useEffect(() => {
+    if (!shown || !type.time_limit || isCompleted || exiting) {
+      setTimeLimitActive(false)
+      return
+    }
+    const timer = setTimeout(() => setTimeLimitActive(true), FADE_MS)
+    return () => clearTimeout(timer)
+  }, [shown, type.time_limit, isCompleted, exiting, runId])
+
+  useEffect(() => {
     if (!visible) {
-      setShown(false)
+      if (!exiting) setShown(false)
       return
     }
     setShown(false)
+    setExiting(false)
     const frame = requestAnimationFrame(() => setShown(true))
     return () => cancelAnimationFrame(frame)
-  }, [visible, runId])
+  }, [visible, runId, exiting])
 
-  if (!active || !visible) return null
+  if (!active || !displayed) return null
 
   const isSuccess =
     feedback === 'success' || (scrollDirectionMatches && isActiveScrollInstruction)
   const showTimeLimitFade =
-    type.time_limit && !isSuccess && feedback !== 'failure'
+    type.time_limit
+    && timeLimitActive
+    && !isSuccess
+    && feedback !== 'failure'
+    && !isCompleted
+    && !exiting
 
   const feedbackClass =
     isSuccess
@@ -94,7 +126,7 @@ export default function Instruction({
     >
       <span
         className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${showTimeLimitFade ? ' instruction-text--time-limit' : ''}`}
-        style={showTimeLimitFade && shown ? { animationDuration: `${type.time_limit}ms` } : undefined}
+        style={showTimeLimitFade ? { animationDuration: `${type.time_limit}ms` } : undefined}
       >
         {type.display_text}
       </span>
