@@ -18,6 +18,18 @@ function pickRandomUnique(options, count) {
   return picked
 }
 
+export function formatGameDuration(ms) {
+  const totalSeconds = Math.round(ms / 1000)
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  const minuteLabel = minutes === 1 ? 'minute' : 'minutes'
+  const secondLabel = seconds === 1 ? 'second' : 'seconds'
+  if (minutes > 0) {
+    return `${minutes} ${minuteLabel} ${seconds} ${secondLabel}`
+  }
+  return `${seconds} ${secondLabel}`
+}
+
 export function generateCaption() {
   const entry = pickRandom(captions)
 
@@ -28,9 +40,8 @@ export function generateCaption() {
 
   const hashtagCount = Math.floor(Math.random() * 5)
   const hashtags = pickRandomUnique(entry.hashtags ?? [], hashtagCount)
-  if (hashtags.length === 0) return phrase
 
-  return `${phrase} ${hashtags.map((tag) => `#${tag}`).join(' ')}`
+  return { phrase, hashtags }
 }
 
 export function generateInstructions(index, generation = 0) {

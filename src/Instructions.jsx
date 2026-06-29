@@ -10,7 +10,7 @@ export default function Instructions({ instructions, duration, active, pageIndex
 
   return (
     <Instruction
-      key={`${pageIndex}-${instructionIndex}-${instruction.type.id}`}
+      key={pageIndex}
       type={instruction.type}
       timePercent={instruction.timePercent}
       duration={duration}

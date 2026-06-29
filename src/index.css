@@ -4,13 +4,25 @@ html, body, #root {
   height: 100dvh;
   background: #000;
   color: #fff;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: 'TikTok Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 :root {
   --browser-ui-bottom: 0px;
   --page-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--browser-ui-bottom));
   --color-success: #22c55e;
+}
+
+button{ 
+  border: 2px solid #00000000;
+  border-radius: 8px;
+  background: #ff4d5c;
+  color: #ffffff;
+  font: inherit;
+  font-size: 5vw;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  cursor: pointer;
 }
 
 .score {
@@ -68,7 +80,7 @@ html, body, #root {
   align-items: center;
   padding-top: max(2.5dvh, env(safe-area-inset-top, 0px));
   box-sizing: border-box;
-  background: #e5e5e5;
+  background: #ededed;
   color: #000;
   justify-content: center;
 }
@@ -77,6 +89,19 @@ html, body, #root {
   margin: 0;
   font-size: 8vw;
   font-weight: 700;
+  padding-bottom: 1dvh;
+  text-align: center;
+  width: 90%;
+}
+
+.title-page-subheading {
+  margin: 0;
+  font-size: 5vw;
+  font-weight: 400;
+  padding-bottom: 5dvh;
+  text-align: center;
+  width: 90%;
+  padding-bottom: 2dvh;
 }
 
 .title-page-high-score {
@@ -88,15 +113,6 @@ html, body, #root {
 .title-page-start {
   margin-top: 3dvh;
   padding: 12px 32px;
-  border: 2px solid #000000;
-  border-radius: 8px;
-  background: transparent;
-  color: #000000;
-  font: inherit;
-  font-size: 5vw;
-  font-weight: 600;
-  cursor: pointer;
-  text-transform: lowercase;
 }
 
 .title-page-start:active {
@@ -127,6 +143,15 @@ html, body, #root {
 .page-caption {
   font-size: 4vw;
   line-height: 1.4;
+}
+
+.page-caption-text {
+  font-weight: 100;
+}
+
+.page-caption-hashtag {
+  display: inline;
+  font-weight: 400;
 }
 
 .page-actions {
@@ -185,18 +210,32 @@ html, body, #root {
   z-index: 2;
 }
 
-.instruction-text {
-  font-family: "Roboto Condensed", sans-serif;
-
-  color: #fff;
-  font-size: 18vw;
-  font-weight: 400;
-  opacity: 0;
-  transition: opacity 0.4s ease-in-out;
+.instruction-text-stack {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-.instruction-overlay--visible .instruction-text {
+.instruction-text {
+  position: absolute;
+  color: #fff;
+  font-size: 10vw;
+  font-weight: 400;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease-in-out, visibility 0s linear 0.4s;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.instruction-text--shown {
   opacity: 1;
+  visibility: visible;
+  transition: opacity 0.4s ease-in-out, visibility 0s;
 }
 
 .instruction-text--success {
@@ -224,8 +263,8 @@ html, body, #root {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2dvh;
-  padding: 4dvh;
+  gap: 1.5dvh;
+  padding: 3dvh;
   box-sizing: border-box;
   background: #e3e3e3;
   border-radius: 16px;
@@ -244,17 +283,23 @@ html, body, #root {
   font-size: 6vw;
   font-weight: 600;
 }
+
+.game-over-duration {
+  margin: 0;
+  font-size: 5vw;
+  font-weight: 400;
+}
+
+.game-over-new-high-score {
+  margin: 1dvh 0 0;
+  font-size: 5vw;
+  font-weight: 500;
+  color: var(--color-success);
+}
+
 .game-over-start-over {
   margin-top: 2dvh;
   padding: 12px 28px;
-  border: 2px solid #000;
-  border-radius: 8px;
-  background: transparent;
-  color: #000;
-  font: inherit;
-  font-size: 5vw;
-  font-weight: 600;
-  cursor: pointer;
 }
 
 .game-over-start-over:active {

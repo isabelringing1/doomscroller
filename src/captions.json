@@ -23,5 +23,29 @@
       ["go to the pool", "get laid off", "break up with my cheating bf", "go on a first date"]
     ],
     "hashtags": ["fyp", "explorepage", "grwm", "summer", "beauty", "yap"]
+  },
+  {
+    "phrase": "wait for the reaction... the {0} video you’ll see all day {1}",
+    "phrase_data": [
+      ["most heartwarming", "most adorable", "cutest", "saddest"],
+      ["❤️", "💔", "💖✨", "💕"]
+    ],
+    "hashtags": ["fyp", "explorepage", "cute", "sad", "viral", "dogs", "cats", "babies"]
+  },
+  {
+    "phrase": "what i packed for my {0} hour shift {1}",
+    "phrase_data": [
+      ["8", "12", "16", "24"],
+      ["at the hospital", "at the ER", "at my corporate job", "doing construction", "at a warehouse"]
+    ],
+    "hashtags": ["fyp", "explorepage", "work", "lunch", "foodie", "sourdough", "sandwich", "mexicanfood"]
+  },
+  {
+    "phrase": "asmr {0} {1}",
+    "phrase_data": [
+      ["food", "slime", "mukbang", "cat spa", "dog spa", "fridge restock"],
+      ["USA", "crunchy", "💥", "vlog"]
+    ],
+    "hashtags": ["fyp", "explorepage", "asmr", "sleep", "asmrtok", "yum"]
   }
 ]

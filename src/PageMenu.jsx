@@ -6,9 +6,8 @@ import { playerAction, togglePageEngagement } from './store.js'
 
 export default function PageMenu({ index, active }) {
   const dispatch = useDispatch()
-  const { liked, saved } = useSelector(
-    (s) => s.game.pageEngagement[index] ?? { liked: false, saved: false },
-  )
+  const liked = useSelector((s) => s.game.pageEngagement[index]?.liked ?? false)
+  const saved = useSelector((s) => s.game.pageEngagement[index]?.saved ?? false)
   const feedGeneration = useSelector((s) => s.feed.feedGeneration)
   const name = `@user_${index}`
   const caption = useMemo(() => generateCaption(), [index, feedGeneration])
@@ -25,7 +24,14 @@ export default function PageMenu({ index, active }) {
     <>
       <div className="page-info">
         <div className="page-name">{name}</div>
-        <div className="page-caption">{caption}</div>
+        <div className="page-caption">
+          <span className="page-caption-text">
+            {caption.phrase}
+            {caption.hashtags.map((tag, i) => (
+              <span key={`${tag}-${i}`} className="page-caption-hashtag"> #{tag}</span>
+            ))}
+          </span>
+        </div>
       </div>
       <div className="page-actions">
         <button type="button" aria-label="Like" onClick={() => onButton('like')}>

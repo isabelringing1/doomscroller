@@ -28,6 +28,8 @@ const gameSlice = createSlice({
     score: 0,
     health: 1,
     gameStarted: false,
+    gameStartedAt: null,
+    gameDurationMs: null,
     instructionSession: null,
     pageEngagement: {},
     instructionFailureOverlay: null,
@@ -35,6 +37,10 @@ const gameSlice = createSlice({
   reducers: {
     playerAction: () => {},
     startGame: (s) => { s.gameStarted = true },
+    beginGameplay: (s) => {
+      s.gameStartedAt = Date.now()
+      s.gameDurationMs = null
+    },
     togglePageEngagement: (s, { payload: { pageIndex, name } }) => {
       if (name !== 'like' && name !== 'save') return
       const field = name === 'like' ? 'liked' : 'saved'
@@ -45,6 +51,9 @@ const gameSlice = createSlice({
     },
     damageHealth: (s) => {
       s.health -= 1
+      if (s.health <= 0 && s.gameStartedAt != null && s.gameDurationMs == null) {
+        s.gameDurationMs = Date.now() - s.gameStartedAt
+      }
     },
     instructionPageActive: (s, { payload: { pageIndex, instructions } }) => {
       s.instructionSession = {
@@ -70,7 +79,7 @@ const gameSlice = createSlice({
       }
     },
     instructionFailed: (s) => {
-      if (s.instructionSession?.status !== 'pending' || !s.instructionSession.visible) return
+      if (s.instructionSession?.status !== 'pending') return
       s.instructionFailureOverlay = {
         pageIndex: s.instructionSession.pageIndex,
         displayText: s.instructionSession.instruction.type.display_text,
@@ -102,6 +111,8 @@ const gameSlice = createSlice({
       s.score = 0
       s.health = 1
       s.gameStarted = false
+      s.gameStartedAt = null
+      s.gameDurationMs = null
       s.instructionSession = null
       s.pageEngagement = {}
       s.instructionFailureOverlay = null
@@ -113,6 +124,7 @@ export const { next, prev, setIndex, setScrollDirection, dismissTitle, resetFeed
 export const {
   playerAction,
   startGame,
+  beginGameplay,
   startOver,
   damageHealth,
   togglePageEngagement,

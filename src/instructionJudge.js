@@ -19,8 +19,26 @@ export function setupInstructionJudge({
     effect: (action, api) => {
       const { health, instructionSession: session, instructionFailureOverlay } = api.getState().game
       if (health <= 0 || instructionFailureOverlay) return
+      if (session?.status === 'completed') return
 
-      const isListening = session?.visible && session.status === 'pending'
+      const isListening = session.status === 'pending' && session.visible
+      const isAwaitingShow = session.status === 'pending' && !session.visible
+
+      const fail = () => {
+        api.dispatch(instructionFailed())
+        setTimeout(() => {
+          api.dispatch(damageHealth())
+          api.dispatch(clearInstructionFeedback())
+          if (action.payload.pendingIndex !== undefined) {
+            api.dispatch(setIndex(action.payload.pendingIndex))
+          }
+        }, FEEDBACK_MS)
+      }
+
+      if (isAwaitingShow) {
+        fail()
+        return
+      }
 
       if (isListening) {
         const matcher = instructionMatchers[session.instructionId]
@@ -41,14 +59,7 @@ export function setupInstructionJudge({
           }, FEEDBACK_MS)
           return
         }
-        api.dispatch(instructionFailed())
-        setTimeout(() => {
-          api.dispatch(damageHealth())
-          api.dispatch(clearInstructionFeedback())
-          if (action.payload.pendingIndex !== undefined) {
-            api.dispatch(setIndex(action.payload.pendingIndex))
-          }
-        }, FEEDBACK_MS)
+        fail()
         return
       }
 

@@ -4,7 +4,7 @@ import Page from './Page.jsx'
 import Score from './Score.jsx'
 import GameOver from './GameOver.jsx'
 import TitlePage from './TitlePage.jsx'
-import { dismissTitle, setIndex, setScrollDirection, playerAction, store } from './store.js'
+import { dismissTitle, beginGameplay, setIndex, setScrollDirection, playerAction, store } from './store.js'
 import { MIN_PAGE_INDEX } from './pageMeta.js'
 
 const PAGES_BEFORE = 1
@@ -36,6 +36,7 @@ export default function App() {
       if (done) return
       done = true
       dispatch(dismissTitle())
+      dispatch(beginGameplay())
       ignoreScrollRef.current = false
     }
 
