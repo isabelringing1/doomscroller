@@ -188,7 +188,7 @@ button{
   height: 100%;
   width: 0;
   background: #fff;
-  animation: page-duration-fill linear infinite;
+  animation: page-duration-fill linear forwards;
 }
 
 @keyframes page-duration-fill {
@@ -240,12 +240,30 @@ button{
   transition: opacity 0.4s ease-in-out, visibility 0s;
 }
 
+.instruction-text--shown.instruction-text--time-limit {
+  opacity: 1;
+  transition: visibility 0s, color 0.15s ease;
+  animation: instruction-time-limit linear forwards;
+}
+
+@keyframes instruction-time-limit {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 .instruction-text--success {
   color: var(--color-success);
 }
 
 .instruction-text--failure {
   color: #ef4444;
+  opacity: 1;
+  animation: instruction-flash 0.15s linear 3;
+}
+
+@keyframes instruction-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
 }
 
 .game-over-overlay {

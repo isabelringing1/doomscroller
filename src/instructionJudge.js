@@ -22,6 +22,7 @@ function onlyUnjudgeableVisible(session) {
 
 export function setupInstructionJudge({
   playerAction,
+  instructionVisible,
   instructionSucceeded,
   instructionCompleted,
   instructionFailed,
@@ -29,6 +30,41 @@ export function setupInstructionJudge({
   damageHealth,
   setIndex,
 }) {
+  function failInstruction(api, instructionIndices, pendingIndex) {
+    api.dispatch(instructionFailed({ instructionIndices }))
+    setTimeout(() => {
+      api.dispatch(damageHealth())
+      api.dispatch(clearInstructionFeedback())
+      if (pendingIndex !== undefined) {
+        api.dispatch(setIndex(pendingIndex))
+      }
+    }, FEEDBACK_MS)
+  }
+
+  instructionListener.startListening({
+    actionCreator: instructionVisible,
+    effect: async (action, api) => {
+      const { pageIndex, instructionIndex } = action.payload
+      const session = api.getState().game.instructionSession
+      if (!session || session.pageIndex !== pageIndex) return
+
+      const instruction = session.instructions[instructionIndex]
+      const timeLimit = instruction.type.time_limit
+      if (!timeLimit || instruction.type.unjudgeable) return
+
+      await api.delay(timeLimit)
+
+      const { health, instructionSession: current } = api.getState().game
+      if (health <= 0) return
+      if (!current || current.pageIndex !== pageIndex) return
+
+      const state = current.states[instructionIndex]
+      if (!state || state.status !== 'pending' || !state.visible || state.feedback) return
+
+      failInstruction(api, [instructionIndex])
+    },
+  })
+
   instructionListener.startListening({
     actionCreator: playerAction,
     effect: (action, api) => {
@@ -42,14 +78,7 @@ export function setupInstructionJudge({
         const judgeable = getActiveJudgeable(session)
 
         const fail = (instructionIndices) => {
-          api.dispatch(instructionFailed({ instructionIndices }))
-          setTimeout(() => {
-            api.dispatch(damageHealth())
-            api.dispatch(clearInstructionFeedback())
-            if (action.payload.pendingIndex !== undefined) {
-              api.dispatch(setIndex(action.payload.pendingIndex))
-            }
-          }, FEEDBACK_MS)
+          failInstruction(api, instructionIndices, action.payload.pendingIndex)
         }
 
         if (judgeable.length === 0) {

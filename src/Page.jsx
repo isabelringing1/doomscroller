@@ -33,7 +33,7 @@ export default function Page({ index, active }) {
         active={active}
         pageIndex={index}
       />
-      <PageDuration index={index} active={active} duration={duration} />
+      <PageDuration active={active} duration={duration} />
     </div>
   )
 }

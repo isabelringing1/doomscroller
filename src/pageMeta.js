@@ -2,6 +2,7 @@ export const MIN_PAGE_INDEX = 0
 
 export function durationForIndex(index, generation = 0) {
   const t = Math.abs(Math.sin((index + 1 + generation * 997) * 12.9898) * 43758.5453) % 1
+  return 10;
   return 5 + t * 10
 }
 

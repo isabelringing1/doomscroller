@@ -78,7 +78,9 @@ const gameSlice = createSlice({
       const session = s.instructionSession
       if (session?.pageIndex !== pageIndex) return
       if (isInstructionBlocked(session, instructionIndex)) return
-      session.states[instructionIndex].visible = true
+      const state = session.states[instructionIndex]
+      if (state.visible) return
+      state.visible = true
     },
     instructionSucceeded: (s, { payload: { instructionIndex } }) => {
       const session = s.instructionSession
@@ -141,6 +143,7 @@ export const {
 
 setupInstructionJudge({
   playerAction,
+  instructionVisible,
   instructionSucceeded,
   instructionCompleted,
   instructionFailed,

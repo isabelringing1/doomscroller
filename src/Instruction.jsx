@@ -73,8 +73,13 @@ export default function Instruction({
 
   if (!active || !visible) return null
 
-  const feedbackClass =
+  const isSuccess =
     feedback === 'success' || (scrollDirectionMatches && isActiveScrollInstruction)
+  const showTimeLimitFade =
+    type.time_limit && !isSuccess && feedback !== 'failure'
+
+  const feedbackClass =
+    isSuccess
       ? ' instruction-text--success'
       : feedback === 'failure'
         ? ' instruction-text--failure'
@@ -87,7 +92,10 @@ export default function Instruction({
       className={`instruction instruction--anchor-${align}`}
       style={{ left: `${position.vw}vw`, bottom: `${position.dvh}dvh` }}
     >
-      <span className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}`}>
+      <span
+        className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${showTimeLimitFade ? ' instruction-text--time-limit' : ''}`}
+        style={showTimeLimitFade && shown ? { animationDuration: `${type.time_limit}ms` } : undefined}
+      >
         {type.display_text}
       </span>
     </div>
