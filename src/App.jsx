@@ -96,7 +96,8 @@ export default function App() {
           direction: newIndex > currentIndex ? 'down' : 'up',
           pendingIndex: newIndex,
         }))
-        if (!store.getState().game.instructionFailureOverlay) {
+        const hasFeedback = store.getState().game.instructionSession?.states?.some((s) => s.feedback)
+        if (!hasFeedback) {
           dispatch(setIndex(newIndex))
         }
       }

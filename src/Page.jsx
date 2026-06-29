@@ -10,7 +10,6 @@ import { instructionPageActive } from './store.js'
 export default function Page({ index, active }) {
   const dispatch = useDispatch()
   const feedGeneration = useSelector((s) => s.feed.feedGeneration)
-  const failureOverlay = useSelector((s) => s.game.instructionFailureOverlay)
   const instructions = useMemo(
     () => generateInstructions(index, feedGeneration),
     [index, feedGeneration],
@@ -19,7 +18,6 @@ export default function Page({ index, active }) {
     () => durationForIndex(index, feedGeneration),
     [index, feedGeneration],
   )
-  const showFailureOverlay = failureOverlay?.pageIndex === index
 
   useEffect(() => {
     if (!active) return
@@ -35,11 +33,6 @@ export default function Page({ index, active }) {
         active={active}
         pageIndex={index}
       />
-      {showFailureOverlay && (
-        <div className="instruction-overlay instruction-overlay--visible instruction-overlay--feedback">
-          <span className="instruction-text instruction-text--failure">{failureOverlay.displayText}</span>
-        </div>
-      )}
       <PageDuration index={index} active={active} duration={duration} />
     </div>
   )

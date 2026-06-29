@@ -1,5 +1,6 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
 import { instructionListener, setupInstructionJudge } from './instructionJudge.js'
+import { isInstructionBlocked } from './Util.js'
 import { MIN_PAGE_INDEX } from './pageMeta.js'
 
 const clampPageIndex = (index) => Math.max(MIN_PAGE_INDEX, index)
@@ -22,6 +23,13 @@ const feedSlice = createSlice({
   },
 })
 
+function allJudgeableCompleted(session) {
+  return session.instructions.every(
+    (instruction, i) =>
+      instruction.type.unjudgeable || session.states[i].status === 'completed',
+  )
+}
+
 const gameSlice = createSlice({
   name: 'game',
   initialState: {
@@ -32,7 +40,6 @@ const gameSlice = createSlice({
     gameDurationMs: null,
     instructionSession: null,
     pageEngagement: {},
-    instructionFailureOverlay: null,
   },
   reducers: {
     playerAction: () => {},
@@ -59,53 +66,52 @@ const gameSlice = createSlice({
       s.instructionSession = {
         pageIndex,
         instructions,
-        instructionIndex: 0,
-        instructionId: instructions[0].type.id,
-        instruction: instructions[0],
-        visible: false,
         status: 'pending',
-        feedback: null,
+        states: instructions.map((instruction) => ({
+          status: 'pending',
+          visible: false,
+          feedback: null,
+        })),
       }
     },
-    instructionVisible: (s, { payload: { pageIndex } }) => {
-      if (s.instructionSession?.pageIndex !== pageIndex) return
-      s.instructionSession.visible = true
+    instructionVisible: (s, { payload: { pageIndex, instructionIndex } }) => {
+      const session = s.instructionSession
+      if (session?.pageIndex !== pageIndex) return
+      if (isInstructionBlocked(session, instructionIndex)) return
+      session.states[instructionIndex].visible = true
     },
-    instructionSucceeded: (s) => {
-      if (s.instructionSession?.status !== 'pending') return
+    instructionSucceeded: (s, { payload: { instructionIndex } }) => {
+      const session = s.instructionSession
+      if (!session || session.status !== 'pending') return
+      const state = session.states[instructionIndex]
+      if (!state || state.status !== 'pending') return
       s.score += 1
-      if (s.instructionSession.instructionId !== 'scroll_down') {
-        s.instructionSession.feedback = 'success'
+      if (session.instructions[instructionIndex].type.id !== 'scroll_down') {
+        state.feedback = 'success'
       }
     },
-    instructionFailed: (s) => {
-      if (s.instructionSession?.status !== 'pending') return
-      s.instructionFailureOverlay = {
-        pageIndex: s.instructionSession.pageIndex,
-        displayText: s.instructionSession.instruction.type.display_text,
+    instructionFailed: (s, { payload: { instructionIndices } }) => {
+      const session = s.instructionSession
+      if (!session || session.status !== 'pending') return
+      for (const index of instructionIndices) {
+        session.states[index].feedback = 'failure'
       }
     },
     clearInstructionFeedback: (s) => {
-      if (s.instructionSession) s.instructionSession.feedback = null
-      s.instructionFailureOverlay = null
+      s.instructionSession?.states.forEach((state) => {
+        state.feedback = null
+      })
     },
-    instructionCompleted: (s) => {
-      if (s.instructionSession?.status !== 'pending') return
-      s.instructionSession.feedback = null
-
-      const { instructions, instructionIndex } = s.instructionSession
-      const nextIndex = instructionIndex + 1
-
-      if (instructions.length > 1 && nextIndex < instructions.length) {
-        s.instructionSession.instructionIndex = nextIndex
-        s.instructionSession.instruction = instructions[nextIndex]
-        s.instructionSession.instructionId = instructions[nextIndex].type.id
-        s.instructionSession.visible = false
-        return
+    instructionCompleted: (s, { payload: { instructionIndex } }) => {
+      const session = s.instructionSession
+      if (!session || session.status !== 'pending') return
+      const state = session.states[instructionIndex]
+      if (!state || state.status !== 'pending') return
+      state.feedback = null
+      state.status = 'completed'
+      if (allJudgeableCompleted(session)) {
+        session.status = 'completed'
       }
-
-      s.instructionSession.status = 'completed'
-      s.instructionSession.visible = false
     },
     startOver: (s) => {
       s.score = 0
@@ -115,7 +121,6 @@ const gameSlice = createSlice({
       s.gameDurationMs = null
       s.instructionSession = null
       s.pageEngagement = {}
-      s.instructionFailureOverlay = null
     },
   },
 })

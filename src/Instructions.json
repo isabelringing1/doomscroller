@@ -1,13 +1,23 @@
 [
   {
+    "id": "watch",
+    "display_text": "Watch",
+    "time_bounds": [0, 0],
+    "unjudgeable": true,
+    "position": { "vw": 10, "vh": 35, "anchor": "center left" }
+  },
+  {
     "id": "scroll_down",
-    "display_text": "Scroll",
-    "time_bounds": [20, 40],
-    "params": { "direction": "down" }
+    "display_text": "Scroll ↓",
+    "time_bounds": [20, 20],
+    "params": { "direction": "down" },
+    "position": { "vw": 10, "vh": 75, "anchor": "center left" }
   },
   {
     "id": "like",
     "display_text": "Like",
-    "time_bounds": [10, 20]
+    "time_bounds": [30, 30],
+    "blocking": true,
+    "position": { "vw": 75, "vh": 66, "anchor": "center right" }
   }
 ]
