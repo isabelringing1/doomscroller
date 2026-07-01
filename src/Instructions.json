@@ -4,7 +4,7 @@
     "display_text": "Watch",
     "time_bounds": [0, 0],
     "unjudgeable": true,
-    "position": { "vw": 7, "dvh": 50, "anchor": "center left" }
+    "position": { "vw": 50, "dvh": 50 }
   },
   {
     "id": "scroll_down",
@@ -12,7 +12,7 @@
     "time_bounds": [30, 30],
     "time_limit": 2000,
     "params": { "direction": "down" },
-    "position": { "vw": 7, "dvh": 50, "anchor": "center left" }
+    "position": { "vw": 50, "dvh": 50 }
   },
   {
     "id": "like",
@@ -29,5 +29,14 @@
     "time_limit": 2000,
     "blocking": true,
     "position": { "vw": 80, "dvh": 16, "anchor": "center right" }
+  },
+  {
+    "id": "speed_up",
+    "display_text": "Press Here",
+    "time_bounds": [10, 10],
+    "duration_bounds": [1000, 3000],
+    "time_limit": 2000,
+    "blocking": true,
+    "position": { "vw": 90, "dvh": 70, "anchor": "center right" }
   }
 ]

@@ -5,6 +5,28 @@ export const instructionListener = createListenerMiddleware()
 
 const FEEDBACK_MS = 200
 
+const speedUpHolds = new Map()
+
+function cancelSpeedUpHold(key) {
+  const task = speedUpHolds.get(key)
+  if (!task) return
+  task.cancelled = true
+  speedUpHolds.delete(key)
+}
+
+function getSpeedUpHoldKey(pageIndex, instructionIndex) {
+  return `${pageIndex}:${instructionIndex}`
+}
+
+export function isSpeedUpHolding(pageIndex) {
+  if (pageIndex == null) return false
+  const prefix = `${pageIndex}:`
+  for (const key of speedUpHolds.keys()) {
+    if (key.startsWith(prefix)) return true
+  }
+  return false
+}
+
 function getActiveVisible(session) {
   return session.instructions
     .map((instruction, i) => ({ instruction, i, state: session.states[i] }))
@@ -30,6 +52,15 @@ export function setupInstructionJudge({
   damageHealth,
   setIndex,
 }) {
+  function completeInstruction(api, instructionIndex) {
+    api.dispatch(instructionSucceeded({ instructionIndex }))
+    setTimeout(() => {
+      if (api.getState().game.instructionSession?.states[instructionIndex]?.feedback === 'success') {
+        api.dispatch(instructionCompleted({ instructionIndex }))
+      }
+    }, FEEDBACK_MS)
+  }
+
   function failInstruction(api, instructionIndices, pendingIndex) {
     api.dispatch(instructionFailed({ instructionIndices }))
     setTimeout(() => {
@@ -55,6 +86,10 @@ export function setupInstructionJudge({
 
       await api.delay(timeLimit)
 
+      while (isSpeedUpHolding(pageIndex)) {
+        await api.delay(50)
+      }
+
       const { health, instructionSession: current } = api.getState().game
       if (health <= 0) return
       if (!current || current.pageIndex !== pageIndex) return
@@ -68,12 +103,59 @@ export function setupInstructionJudge({
 
   instructionListener.startListening({
     actionCreator: playerAction,
-    effect: (action, api) => {
+    effect: async (action, api) => {
       const { health, zenMode, instructionSession: session } = api.getState().game
       if (health <= 0) return
       if (session?.status === 'completed') return
 
       if (session?.states?.some((state) => state.feedback)) return
+
+      if (session && isSpeedUpHolding(session.pageIndex) && action.payload.type !== 'speed_up') {
+        return
+      }
+
+      if (action.payload.type === 'speed_up') {
+        if (!session) return
+
+        const speedUp = getActiveJudgeable(session).find(({ instruction }) => instruction.type.id === 'speed_up')
+        if (!speedUp) return
+
+        const { i, instruction } = speedUp
+        const key = getSpeedUpHoldKey(session.pageIndex, i)
+        const holdDurationMs = instruction.holdDurationMs
+        if (!holdDurationMs) return
+
+        if (action.payload.phase === 'press') {
+          cancelSpeedUpHold(key)
+          const task = { cancelled: false }
+          speedUpHolds.set(key, task)
+
+          await api.delay(holdDurationMs)
+
+          const current = api.getState().game.instructionSession
+          if (task.cancelled) return
+          if (!current || current.pageIndex !== session.pageIndex) return
+
+          const state = current.states[i]
+          if (!state || state.status !== 'pending' || !state.visible || state.feedback) return
+
+          speedUpHolds.delete(key)
+          completeInstruction(api, i)
+          return
+        }
+
+        if (action.payload.phase === 'release') {
+          const hadHold = speedUpHolds.has(key)
+          cancelSpeedUpHold(key)
+          if (hadHold && !zenMode) {
+            const state = api.getState().game.instructionSession?.states[i]
+            if (state?.status === 'pending' && state.visible && !state.feedback) {
+              failInstruction(api, [i])
+            }
+          }
+        }
+        return
+      }
 
       if (session) {
         const judgeable = getActiveJudgeable(session)
@@ -96,12 +178,7 @@ export function setupInstructionJudge({
 
         if (match) {
           const { i } = match
-          api.dispatch(instructionSucceeded({ instructionIndex: i }))
-          setTimeout(() => {
-            if (api.getState().game.instructionSession?.states[i]?.feedback === 'success') {
-              api.dispatch(instructionCompleted({ instructionIndex: i }))
-            }
-          }, FEEDBACK_MS)
+          completeInstruction(api, i)
           return
         }
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { anchorAlign, isInstructionBlocked } from './Util.js'
-import { instructionVisible } from './store.js'
+import { instructionVisible, playerAction } from './store.js'
 
 const FADE_MS = 400
 const DEFAULT_FADE_OUT_MS = 2000
@@ -25,6 +25,7 @@ export default function Instruction({
   const [shown, setShown] = useState(false)
   const [fadeOutActive, setFadeOutActive] = useState(false)
   const [exiting, setExiting] = useState(false)
+  const [speedUpPressed, setSpeedUpPressed] = useState(false)
 
   const sessionMatchesPage = session?.pageIndex === pageIndex
   const instructionState = sessionMatchesPage ? session.states[instructionIndex] : null
@@ -47,9 +48,11 @@ export default function Instruction({
   useEffect(() => {
     if (!active) {
       setTimerReady(false)
+      setSpeedUpPressed(false)
       return
     }
     setTimerReady(false)
+    setSpeedUpPressed(false)
     setRunId((id) => id + 1)
   }, [active])
 
@@ -103,8 +106,11 @@ export default function Instruction({
 
   if (!active || !displayed) return null
 
+  const isSpeedUpHolding = type.id === 'speed_up' && speedUpPressed && !feedback && !isCompleted
   const isSuccess =
-    feedback === 'success' || (scrollDirectionMatches && isActiveScrollInstruction)
+    feedback === 'success'
+    || isSpeedUpHolding
+    || (scrollDirectionMatches && isActiveScrollInstruction)
   const fadeOutDurationMs = timeLimit ?? DEFAULT_FADE_OUT_MS
   const showFadeOut =
     !zenMode
@@ -123,9 +129,62 @@ export default function Instruction({
 
   const align = anchorAlign(position.anchor)
 
+  const onSpeedUpPress = (event) => {
+    if (!visible || speedUpPressed || event.button !== 0) return
+    event.preventDefault()
+    event.stopPropagation()
+    event.currentTarget.setPointerCapture(event.pointerId)
+    setSpeedUpPressed(true)
+    dispatch(playerAction({ type: 'speed_up', phase: 'press' }))
+  }
+
+  const onSpeedUpRelease = (event) => {
+    if (!speedUpPressed) return
+    if (event.type === 'pointercancel' && event.buttons !== 0) return
+    event.preventDefault()
+    event.stopPropagation()
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+    setSpeedUpPressed(false)
+    dispatch(playerAction({ type: 'speed_up', phase: 'release' }))
+  }
+
+  const onSpeedUpContextMenu = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  if (type.id === 'speed_up') {
+    return (
+      <div className="instruction--speed-up">
+        <button
+          type="button"
+          className={`speed-up-gradient${speedUpPressed ? ' speed-up-gradient--pressed' : ''}${shown ? ' speed-up-gradient--shown' : ''}`}
+          onPointerDown={onSpeedUpPress}
+          onPointerUp={onSpeedUpRelease}
+          onPointerCancel={onSpeedUpRelease}
+          onContextMenu={onSpeedUpContextMenu}
+          aria-label={type.display_text}
+        />
+        <div
+          className={`instruction instruction--anchor-${align}`}
+          style={{ left: `${position.vw}vw`, bottom: `${position.dvh}dvh` }}
+        >
+          <span
+            className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${showFadeOut ? ' instruction-text--fade-out' : ''}`}
+            style={showFadeOut ? { animationDuration: `${fadeOutDurationMs}ms` } : undefined}
+          >
+            {type.display_text}
+          </span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div
-      className={`instruction instruction--anchor-${align}`}
+      className={`instruction instruction--anchor-${align} instruction-${type.id}`}
       style={{ left: `${position.vw}vw`, bottom: `${position.dvh}dvh` }}
     >
       <span

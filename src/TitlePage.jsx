@@ -15,12 +15,13 @@ export default function TitlePage() {
         <button type="button" className="title-page-start" onClick={() => dispatch(startGame({ zenMode: false }))}>
           Start Game
         </button>
-        <button type="button" className="title-page-start" onClick={() => dispatch(startGame({ zenMode: true }))}>
+        {highScore > 0 && <p className="title-page-high-score">High Score: {highScore}</p>}
+        <button type="button" className="zen-mode-button title-page-start" onClick={() => dispatch(startGame({ zenMode: true }))}>
           Zen Mode
         </button>
       </div>
 
-      {highScore > 0 && <p className="title-page-high-score">High Score: {highScore}</p>}
+      
     </div>
   )
 }

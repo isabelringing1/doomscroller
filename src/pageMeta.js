@@ -24,6 +24,11 @@ export function rollInstructionTimePercent(index, timeBounds, salt, generation =
   return min + stableUnit(index, salt, generation) * (max - min)
 }
 
+export function rollInstructionDuration(index, durationBounds, salt, generation = 0) {
+  const [min, max] = durationBounds
+  return min + stableUnit(index, `${salt}:duration`, generation) * (max - min)
+}
+
 export function pickInstructionTypeIndex(index, typeCount, generation = 0) {
   return Math.floor(stableUnit(index, 'instruction-type', generation) * typeCount)
 }

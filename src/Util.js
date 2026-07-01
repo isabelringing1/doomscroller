@@ -1,7 +1,10 @@
 import instructionTypes from './Instructions.json'
 import captions from './captions.json'
-import { pickInstructionTypeIndex, rollInstructionTimePercent, timeScalarForIndex } from './pageMeta.js'
+import { pickInstructionTypeIndex, rollInstructionDuration, rollInstructionTimePercent, timeScalarForIndex } from './pageMeta.js'
 
+export const DEBUG_INSTRUCTIONS = ['watch', 'speed_up', 'scroll_down']
+
+const instructionTypeById = Object.fromEntries(instructionTypes.map((type) => [type.id, type]))
 const actionableTypes = instructionTypes.filter((t) => !t.unjudgeable)
 const unjudgeableType = instructionTypes.find((t) => t.unjudgeable)
 const scrollDownType = instructionTypes.find((t) => t.id === 'scroll_down')
@@ -66,14 +69,32 @@ export function generateCaption() {
 }
 
 export function generateInstructions(index, generation = 0, zenMode = false) {
-  const type = actionableTypes[pickInstructionTypeIndex(index, actionableTypes.length, generation)]
   const scalar = zenMode ? 1 : timeScalarForIndex(index)
 
-  const buildInstruction = (instructionType, salt, timeBounds) => ({
-    type: instructionType,
-    timePercent: rollInstructionTimePercent(index, timeBounds, salt, generation) * scalar,
-    timeLimit: instructionType.time_limit != null ? instructionType.time_limit * scalar : undefined,
-  })
+  const buildInstruction = (instructionType, salt, timeBounds) => {
+    const holdDurationMs = instructionType.duration_bounds
+      ? rollInstructionDuration(index, instructionType.duration_bounds, salt, generation)
+      : undefined
+    const baseTimeLimit = instructionType.time_limit != null ? instructionType.time_limit * scalar : undefined
+
+    return {
+      type: instructionType,
+      timePercent: rollInstructionTimePercent(index, timeBounds, salt, generation) * scalar,
+      timeLimit: baseTimeLimit != null && holdDurationMs != null
+        ? Math.max(baseTimeLimit, holdDurationMs + 500)
+        : baseTimeLimit,
+      holdDurationMs,
+    }
+  }
+
+  if (DEBUG_INSTRUCTIONS.length > 0) {
+    return DEBUG_INSTRUCTIONS.map((id) => {
+      const instructionType = instructionTypeById[id]
+      return buildInstruction(instructionType, id, instructionType.time_bounds)
+    })
+  }
+
+  const type = actionableTypes[pickInstructionTypeIndex(index, actionableTypes.length, generation)]
 
   const instructions = [
     buildInstruction(unjudgeableType, unjudgeableType.id, unjudgeableType.time_bounds),

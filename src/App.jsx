@@ -5,6 +5,7 @@ import Score from './Score.jsx'
 import GameOver from './GameOver.jsx'
 import TitlePage from './TitlePage.jsx'
 import { dismissTitle, beginGameplay, setIndex, setScrollDirection, playerAction, store } from './store.js'
+import { isSpeedUpHolding } from './instructionJudge.js'
 import { MIN_PAGE_INDEX } from './pageMeta.js'
 
 const PAGES_BEFORE = 1
@@ -44,6 +45,9 @@ export default function App() {
   }
 
   function dispatchScrollAction(direction, scrollTop, h) {
+    const session = store.getState().game.instructionSession
+    if (isSpeedUpHolding(session?.pageIndex)) return
+
     const slot = Math.round(scrollTop / h)
     const rawIndex = currentIndex + (slot - PAGES_BEFORE)
     const newIndex = Math.max(MIN_PAGE_INDEX, rawIndex)
@@ -57,7 +61,6 @@ export default function App() {
       scrollJudgedRef.current = false
       return
     }
-    const session = store.getState().game.instructionSession
     if (hadActiveJudgeable(session) || newIndex !== currentIndex) {
       scrollJudgedRef.current = true
     }
@@ -126,12 +129,18 @@ export default function App() {
         ignoreScrollRef.current = true
         el.scrollTop = PAGES_BEFORE * h
         lastScrollTopRef.current = el.scrollTop
-        dispatch(playerAction({ type: 'scroll', direction: 'up' }))
+        const session = store.getState().game.instructionSession
+        if (!isSpeedUpHolding(session?.pageIndex)) {
+          dispatch(playerAction({ type: 'scroll', direction: 'up' }))
+        }
         requestAnimationFrame(() => { ignoreScrollRef.current = false })
         return
       }
 
       if (newIndex !== currentIndex) {
+        const session = store.getState().game.instructionSession
+        if (isSpeedUpHolding(session?.pageIndex)) return
+
         if (!scrollJudgedRef.current) {
           dispatch(playerAction({
             type: 'scroll',
