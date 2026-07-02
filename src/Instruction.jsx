@@ -9,9 +9,8 @@ const DEFAULT_FADE_OUT_MS = 2000
 
 export default function Instruction({
   type,
-  timePercent,
+  timeMs,
   timeLimit,
-  duration,
   active,
   pageIndex,
   instructionIndex,
@@ -61,10 +60,9 @@ export default function Instruction({
 
   useEffect(() => {
     if (!active) return
-    const delayMs = (timePercent / 100) * duration * 1000
-    const timer = setTimeout(() => setTimerReady(true), delayMs)
+    const timer = setTimeout(() => setTimerReady(true), timeMs)
     return () => clearTimeout(timer)
-  }, [active, runId, timePercent, duration])
+  }, [active, runId, timeMs])
 
   useEffect(() => {
     if (!active || !visible) return

@@ -1,6 +1,6 @@
 import instructionTypes from './Instructions.json'
 import captions from './captions.json'
-import { pickInstructionTypeIndex, rollInstructionDuration, rollInstructionTimePercent, timeScalarForIndex } from './pageMeta.js'
+import { pickInstructionTypeIndex, rollInstructionDuration, rollInstructionTimeMs, timeScalarForIndex } from './pageMeta.js'
 
 export const DEBUG_INSTRUCTIONS = ['watch', 'speed_up', 'scroll_down']
 
@@ -79,7 +79,7 @@ export function generateInstructions(index, generation = 0, zenMode = false) {
 
     return {
       type: instructionType,
-      timePercent: rollInstructionTimePercent(index, timeBounds, salt, generation) * scalar,
+      timeMs: rollInstructionTimeMs(index, timeBounds, salt, generation) * scalar,
       timeLimit: baseTimeLimit != null && holdDurationMs != null
         ? Math.max(baseTimeLimit, holdDurationMs + 500)
         : baseTimeLimit,

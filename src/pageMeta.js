@@ -6,8 +6,7 @@ export function timeScalarForIndex(index) {
 
 export function durationForIndex(index, generation = 0) {
   const t = Math.abs(Math.sin((index + 1 + generation * 997) * 12.9898) * 43758.5453) % 1
-  return 10;
-  return 5 + t * 10
+  return 15 + t * 45
 }
 
 function stableUnit(index, salt, generation = 0) {
@@ -19,7 +18,7 @@ function stableUnit(index, salt, generation = 0) {
   return Math.abs(Math.sin(hash * 12.9898) * 43758.5453) % 1
 }
 
-export function rollInstructionTimePercent(index, timeBounds, salt, generation = 0) {
+export function rollInstructionTimeMs(index, timeBounds, salt, generation = 0) {
   const [min, max] = timeBounds
   return min + stableUnit(index, salt, generation) * (max - min)
 }

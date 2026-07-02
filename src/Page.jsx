@@ -30,7 +30,6 @@ export default function Page({ index, active }) {
       <PageMenu index={index} active={active} />
       <Instructions
         instructions={instructions}
-        duration={duration}
         active={active}
         pageIndex={index}
       />

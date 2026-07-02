@@ -1,15 +1,14 @@
 import Instruction from './Instruction.jsx'
 
-export default function Instructions({ instructions, duration, active, pageIndex }) {
+export default function Instructions({ instructions, active, pageIndex }) {
   return (
     <div className="instructions-layer">
       {instructions.map((instruction, instructionIndex) => (
         <Instruction
           key={`${pageIndex}-${instruction.type.id}-${instructionIndex}`}
           type={instruction.type}
-          timePercent={instruction.timePercent}
+          timeMs={instruction.timeMs}
           timeLimit={instruction.timeLimit}
-          duration={duration}
           active={active}
           pageIndex={pageIndex}
           instructionIndex={instructionIndex}
