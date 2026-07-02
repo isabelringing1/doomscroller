@@ -2,10 +2,11 @@ import instructionTypes from './Instructions.json'
 import captions from './captions.json'
 import { pickInstructionTypeIndex, rollInstructionDuration, rollInstructionTimeMs, timeScalarForIndex } from './pageMeta.js'
 
-export const DEBUG_INSTRUCTIONS = ['watch', 'speed_up', 'scroll_down']
+export const DEBUG_INSTRUCTIONS = ['watch', 'comments', 'scroll_comments', 'close_comments', 'scroll_down']
 
 const instructionTypeById = Object.fromEntries(instructionTypes.map((type) => [type.id, type]))
-const actionableTypes = instructionTypes.filter((t) => !t.unjudgeable)
+const actionableTypes = instructionTypes.filter((t) => !t.unjudgeable && !t.comments_overlay)
+const commentsOverlayTypes = instructionTypes.filter((t) => t.comments_overlay)
 const unjudgeableType = instructionTypes.find((t) => t.unjudgeable)
 const scrollDownType = instructionTypes.find((t) => t.id === 'scroll_down')
 
@@ -79,7 +80,9 @@ export function generateInstructions(index, generation = 0, zenMode = false) {
 
     return {
       type: instructionType,
-      timeMs: rollInstructionTimeMs(index, timeBounds, salt, generation) * scalar,
+      timeMs: instructionType.comments_overlay
+        ? rollInstructionTimeMs(index, timeBounds, salt, generation)
+        : rollInstructionTimeMs(index, timeBounds, salt, generation) * scalar,
       timeLimit: baseTimeLimit != null && holdDurationMs != null
         ? Math.max(baseTimeLimit, holdDurationMs + 500)
         : baseTimeLimit,
@@ -100,6 +103,15 @@ export function generateInstructions(index, generation = 0, zenMode = false) {
     buildInstruction(unjudgeableType, unjudgeableType.id, unjudgeableType.time_bounds),
     buildInstruction(type, type.id, type.time_bounds),
   ]
+
+  if (type.id === 'comments' && commentsOverlayTypes.length > 0) {
+    const overlayType = commentsOverlayTypes[
+      pickInstructionTypeIndex(index, commentsOverlayTypes.length, `${generation}:comments-overlay`)
+    ]
+    instructions.push(
+      buildInstruction(overlayType, overlayType.id, overlayType.time_bounds),
+    )
+  }
 
   if (type.id !== 'scroll_down') {
     instructions.push(

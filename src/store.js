@@ -44,10 +44,12 @@ const gameSlice = createSlice({
     speedUpHeld: false,
     commentsOpen: false,
     commentsTopBlueText: null,
+    commentsScrolling: false,
   },
   reducers: {
     playerAction: () => {},
     setSpeedUpHeld: (s, { payload }) => { s.speedUpHeld = payload },
+    setCommentsScrolling: (s, { payload }) => { s.commentsScrolling = payload },
     openComments: (s, { payload }) => {
       s.commentsOpen = true
       const topBlueText = typeof payload === 'string' ? payload : payload?.topBlueText
@@ -57,6 +59,7 @@ const gameSlice = createSlice({
     },
     closeComments: (s) => {
       s.commentsOpen = false
+      s.commentsScrolling = false
     },
     startGame: (s, { payload }) => {
       s.gameStarted = true
@@ -143,6 +146,7 @@ const gameSlice = createSlice({
       s.speedUpHeld = false
       s.commentsOpen = false
       s.commentsTopBlueText = null
+      s.commentsScrolling = false
     },
   },
 })
@@ -151,6 +155,7 @@ export const { next, prev, setIndex, setScrollDirection, dismissTitle, resetFeed
 export const {
   playerAction,
   setSpeedUpHeld,
+  setCommentsScrolling,
   openComments,
   closeComments,
   startGame,

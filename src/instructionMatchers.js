@@ -15,6 +15,15 @@ export const instructionMatchers = {
   comment: (action) =>
     action.type === 'button' && action.name === 'comment',
 
+  comments: (action) =>
+    action.type === 'button' && action.name === 'comment',
+
+  close_comments: (action) =>
+    action.type === 'close_comments',
+
+  scroll_comments: (action) =>
+    action.type === 'scroll_comments' && action.phase === 'end',
+
   save: (action) =>
     action.type === 'button' && action.name === 'save',
 }

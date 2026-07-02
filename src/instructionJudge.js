@@ -6,6 +6,7 @@ export const instructionListener = createListenerMiddleware()
 const FEEDBACK_MS = 200
 
 const speedUpHolds = new Map()
+const scrollCommentsActive = new Map()
 
 function cancelSpeedUpHold(key) {
   const task = speedUpHolds.get(key)
@@ -15,6 +16,10 @@ function cancelSpeedUpHold(key) {
 }
 
 function getSpeedUpHoldKey(pageIndex, instructionIndex) {
+  return `${pageIndex}:${instructionIndex}`
+}
+
+function getScrollCommentsKey(pageIndex, instructionIndex) {
   return `${pageIndex}:${instructionIndex}`
 }
 
@@ -62,6 +67,12 @@ export function setupInstructionJudge({
   }
 
   function failInstruction(api, instructionIndices, pendingIndex) {
+    const session = api.getState().game.instructionSession
+    if (session) {
+      for (const index of instructionIndices) {
+        scrollCommentsActive.delete(getScrollCommentsKey(session.pageIndex, index))
+      }
+    }
     api.dispatch(instructionFailed({ instructionIndices }))
     setTimeout(() => {
       api.dispatch(damageHealth())
@@ -154,6 +165,34 @@ export function setupInstructionJudge({
             }
           }
         }
+        return
+      }
+
+      if (action.payload.type === 'scroll_comments') {
+        if (!session) return
+
+        const scrollComments = getActiveJudgeable(session).find(
+          ({ instruction }) => instruction.type.id === 'scroll_comments',
+        )
+
+        if (action.payload.phase === 'scroll') {
+          if (scrollComments) {
+            scrollCommentsActive.set(getScrollCommentsKey(session.pageIndex, scrollComments.i), true)
+          }
+          return
+        }
+
+        if (action.payload.phase === 'end') {
+          if (scrollComments) {
+            const key = getScrollCommentsKey(session.pageIndex, scrollComments.i)
+            if (scrollCommentsActive.get(key)) {
+              scrollCommentsActive.delete(key)
+              completeInstruction(api, scrollComments.i)
+            }
+          }
+          return
+        }
+
         return
       }
 

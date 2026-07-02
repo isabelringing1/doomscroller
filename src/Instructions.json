@@ -23,6 +23,32 @@
     "position": { "vw": 80, "dvh": 30, "anchor": "center right" }
   },
   {
+    "id": "comments",
+    "display_text": "Open",
+    "time_bounds": [3000, 3000],
+    "time_limit": 2000,
+    "blocking": true,
+    "position": { "vw": 80, "dvh": 23, "anchor": "center right" }
+  },
+  {
+    "id": "close_comments",
+    "display_text": "Close",
+    "time_bounds": [1000, 1000],
+    "time_limit": 2000,
+    "blocking": true,
+    "comments_overlay": true,
+    "position": { "vw": 85, "dvh": 70 }
+  },
+  {
+    "id": "scroll_comments",
+    "display_text": "Scroll",
+    "time_bounds": [0, 0],
+    "time_limit": 2000,
+    "blocking": true,
+    "comments_overlay": true,
+    "position": { "vw": 85, "dvh": 70 }
+  },
+  {
     "id": "save",
     "display_text": "Save",
     "time_bounds": [3000, 3000],
@@ -32,9 +58,9 @@
   },
   {
     "id": "speed_up",
-    "display_text": "Press Here",
-    "time_bounds": [1000, 1000],
-    "duration_bounds": [1000, 3000],
+    "display_text": "Press",
+    "time_bounds": [800, 1000],
+    "duration_bounds": [1000, 2000],
     "time_limit": 2000,
     "blocking": true,
     "position": { "vw": 90, "dvh": 62, "anchor": "center right" }

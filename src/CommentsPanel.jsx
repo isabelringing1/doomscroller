@@ -1,12 +1,19 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { AtSign, Image, ListFilter, Search, Smile, X } from 'lucide-react'
+import { useDispatch } from 'react-redux'
 import Comment from './Comment.jsx'
+import CommentsInstructions from './CommentsInstructions.jsx'
+import { playerAction, setCommentsScrolling } from './store.js'
 
 const SLIDE_MS = 150
 const COMMENT_COUNT = 60
+const COMMENTS_SCROLL_END_MS = 80
 
 export default function CommentsPanel({ isOpen, onClose, topBlueText = null }) {
+  const dispatch = useDispatch()
   const panelRef = useRef(null)
+  const listRef = useRef(null)
+  const scrollEndTimerRef = useRef(null)
   const [mounted, setMounted] = useState(false)
   const comments = useMemo(
     () => Array.from({ length: COMMENT_COUNT }, (_, index) => index),
@@ -41,14 +48,41 @@ export default function CommentsPanel({ isOpen, onClose, topBlueText = null }) {
     panel.style.transform = 'translateY(100%)'
   }, [isOpen, mounted])
 
+  useEffect(() => {
+    const list = listRef.current
+    if (!list || !isOpen) return
+
+    const onScroll = () => {
+      dispatch(setCommentsScrolling(true))
+      dispatch(playerAction({ type: 'scroll_comments', phase: 'scroll' }))
+      clearTimeout(scrollEndTimerRef.current)
+      scrollEndTimerRef.current = setTimeout(() => {
+        dispatch(playerAction({ type: 'scroll_comments', phase: 'end' }))
+        dispatch(setCommentsScrolling(false))
+      }, COMMENTS_SCROLL_END_MS)
+    }
+
+    list.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      list.removeEventListener('scroll', onScroll)
+      clearTimeout(scrollEndTimerRef.current)
+    }
+  }, [isOpen, mounted, dispatch])
+
+  const handleClose = () => {
+    dispatch(playerAction({ type: 'close_comments' }))
+    onClose()
+  }
+
   if (!mounted) return null
 
   return (
     <div className="comments-overlay">
+      <CommentsInstructions />
       <button
         type="button"
         className="comments-dismiss-area"
-        onClick={onClose}
+        onClick={handleClose}
         aria-label="Close comments"
       />
       <div ref={panelRef} className="comments-panel">
@@ -63,13 +97,13 @@ export default function CommentsPanel({ isOpen, onClose, topBlueText = null }) {
           <div className="comments-title-row">
             <div className="comments-title">1,320 comments</div>
             <ListFilter size={18} className="comments-sort-icon" aria-hidden="true" />
-            <button type="button" className="comments-close" onClick={onClose} aria-label="Close comments">
+            <button type="button" className="comments-close" onClick={handleClose} aria-label="Close comments">
               <X size={22} />
             </button>
           </div>
         </div>
 
-        <div className="comments-list">
+        <div ref={listRef} className="comments-list">
           {comments.map((index) => (
             <Comment key={index} />
           ))}

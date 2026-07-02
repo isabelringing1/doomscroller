@@ -18,6 +18,8 @@ export default function Instruction({
 }) {
   const dispatch = useDispatch()
   const session = useSelector((s) => s.game.instructionSession)
+  const commentsOpen = useSelector((s) => s.game.commentsOpen)
+  const commentsScrolling = useSelector((s) => s.game.commentsScrolling)
   const zenMode = useSelector((s) => s.game.zenMode)
   const scrollDirection = useSelector((s) => s.feed.scrollDirection)
   const [timerReady, setTimerReady] = useState(false)
@@ -32,12 +34,18 @@ export default function Instruction({
   const feedback = instructionState?.feedback ?? null
   const isCompleted = instructionState?.status === 'completed'
   const blocked = sessionMatchesPage && isInstructionBlocked(session, instructionIndex)
-  const timerVisible = timerReady && !blocked
+  const overlayGated = type.comments_overlay && !commentsOpen
+  const timerVisible = timerReady && !blocked && !overlayGated
   const displayed = timerVisible || exiting
   const visible = timerVisible
 
   const isActiveScrollInstruction =
     (type.id === 'scroll_down' || type.id === 'scroll_up')
+    && instructionState?.visible
+    && instructionState?.status === 'pending'
+
+  const isActiveScrollCommentsInstruction =
+    type.id === 'scroll_comments'
     && instructionState?.visible
     && instructionState?.status === 'pending'
 
@@ -60,9 +68,11 @@ export default function Instruction({
 
   useEffect(() => {
     if (!active) return
+    if (type.comments_overlay && !commentsOpen) return
+    if (type.comments_overlay && blocked) return
     const timer = setTimeout(() => setTimerReady(true), timeMs)
     return () => clearTimeout(timer)
-  }, [active, runId, timeMs])
+  }, [active, runId, timeMs, type.comments_overlay, commentsOpen, blocked])
 
   useEffect(() => {
     if (!active || !visible) return
@@ -119,6 +129,7 @@ export default function Instruction({
     feedback === 'success'
     || isSpeedUpHolding
     || (scrollDirectionMatches && isActiveScrollInstruction)
+    || (commentsScrolling && isActiveScrollCommentsInstruction)
   const fadeOutDurationMs = timeLimit ?? DEFAULT_FADE_OUT_MS
   const showFadeOut =
     !zenMode
@@ -194,7 +205,7 @@ export default function Instruction({
 
   return (
     <div
-      className={`instruction instruction--anchor-${align} instruction-${type.id}`}
+      className={`instruction instruction--anchor-${align} instruction-${type.id}${type.comments_overlay ? ' instruction--comments-overlay' : ''}`}
       style={{ left: `${position.vw}vw`, bottom: `${position.dvh}dvh` }}
     >
       <span

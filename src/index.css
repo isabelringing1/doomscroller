@@ -407,6 +407,21 @@ button{
   pointer-events: none;
 }
 
+.comments-instructions-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.instruction--comments-overlay .instruction-text {
+
+}
+
+.instruction--comments-overlay .instruction-text--success {
+  color: var(--color-success);
+}
+
 .comments-dismiss-area {
   position: absolute;
   top: 0;
