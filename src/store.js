@@ -41,9 +41,11 @@ const gameSlice = createSlice({
     gameDurationMs: null,
     instructionSession: null,
     pageEngagement: {},
+    speedUpHeld: false,
   },
   reducers: {
     playerAction: () => {},
+    setSpeedUpHeld: (s, { payload }) => { s.speedUpHeld = payload },
     startGame: (s, { payload }) => {
       s.gameStarted = true
       s.zenMode = payload?.zenMode ?? false
@@ -126,6 +128,7 @@ const gameSlice = createSlice({
       s.gameDurationMs = null
       s.instructionSession = null
       s.pageEngagement = {}
+      s.speedUpHeld = false
     },
   },
 })
@@ -133,6 +136,7 @@ const gameSlice = createSlice({
 export const { next, prev, setIndex, setScrollDirection, dismissTitle, resetFeed } = feedSlice.actions
 export const {
   playerAction,
+  setSpeedUpHeld,
   startGame,
   beginGameplay,
   startOver,

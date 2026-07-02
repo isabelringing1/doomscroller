@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { anchorAlign, isInstructionBlocked } from './Util.js'
-import { instructionVisible, playerAction } from './store.js'
+import { instructionVisible, playerAction, setSpeedUpHeld } from './store.js'
 
 const FADE_MS = 400
+const SPEED_UP_COMPLETE_MS = 100
 const DEFAULT_FADE_OUT_MS = 2000
 
 export default function Instruction({
@@ -49,12 +50,14 @@ export default function Instruction({
     if (!active) {
       setTimerReady(false)
       setSpeedUpPressed(false)
+      dispatch(setSpeedUpHeld(false))
       return
     }
     setTimerReady(false)
     setSpeedUpPressed(false)
+    dispatch(setSpeedUpHeld(false))
     setRunId((id) => id + 1)
-  }, [active])
+  }, [active, dispatch])
 
   useEffect(() => {
     if (!active) return
@@ -75,14 +78,21 @@ export default function Instruction({
       return
     }
     setFadeOutActive(false)
-    setShown(false)
     setExiting(true)
+    dispatch(setSpeedUpHeld(false))
+    if (type.id !== 'speed_up') {
+      setShown(false)
+    }
+    const exitMs = type.id === 'speed_up' ? SPEED_UP_COMPLETE_MS : FADE_MS
     const timer = setTimeout(() => {
       setTimerReady(false)
       setExiting(false)
-    }, FADE_MS)
+      if (type.id === 'speed_up') {
+        setShown(false)
+      }
+    }, exitMs)
     return () => clearTimeout(timer)
-  }, [isCompleted, type.unjudgeable])
+  }, [isCompleted, type.unjudgeable, type.id, dispatch])
 
   useEffect(() => {
     if (!shown || isCompleted || exiting) {
@@ -135,6 +145,7 @@ export default function Instruction({
     event.stopPropagation()
     event.currentTarget.setPointerCapture(event.pointerId)
     setSpeedUpPressed(true)
+    dispatch(setSpeedUpHeld(true))
     dispatch(playerAction({ type: 'speed_up', phase: 'press' }))
   }
 
@@ -147,6 +158,7 @@ export default function Instruction({
       event.currentTarget.releasePointerCapture(event.pointerId)
     }
     setSpeedUpPressed(false)
+    dispatch(setSpeedUpHeld(false))
     dispatch(playerAction({ type: 'speed_up', phase: 'release' }))
   }
 
@@ -157,10 +169,10 @@ export default function Instruction({
 
   if (type.id === 'speed_up') {
     return (
-      <div className="instruction--speed-up">
+      <div className={`instruction--speed-up${exiting ? ' instruction--speed-up-exiting' : ''}`}>
         <button
           type="button"
-          className={`speed-up-gradient${speedUpPressed ? ' speed-up-gradient--pressed' : ''}${shown ? ' speed-up-gradient--shown' : ''}`}
+          className={`speed-up-gradient${speedUpPressed ? ' speed-up-gradient--pressed' : ''}${shown ? ' speed-up-gradient--shown' : ''}${exiting ? ' speed-up-gradient--exiting' : ''}`}
           onPointerDown={onSpeedUpPress}
           onPointerUp={onSpeedUpRelease}
           onPointerCancel={onSpeedUpRelease}
@@ -172,7 +184,7 @@ export default function Instruction({
           style={{ left: `${position.vw}vw`, bottom: `${position.dvh}dvh` }}
         >
           <span
-            className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${showFadeOut ? ' instruction-text--fade-out' : ''}`}
+            className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${exiting ? ' instruction-text--speed-up-exit' : ''}${showFadeOut ? ' instruction-text--fade-out' : ''}`}
             style={showFadeOut ? { animationDuration: `${fadeOutDurationMs}ms` } : undefined}
           >
             {type.display_text}

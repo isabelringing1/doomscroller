@@ -143,6 +143,12 @@ button{
   left: max(2.5dvh, env(safe-area-inset-left, 0px));
   max-width: calc(100% - 96px);
   pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.page-info--hidden {
+  opacity: 0;
 }
 
 .page-name {
@@ -172,6 +178,14 @@ button{
   display: flex;
   flex-direction: column;
   gap: 20px;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  z-index: 2;
+}
+
+.page-actions--hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .page-actions button {
@@ -243,6 +257,16 @@ button{
 
 .speed-up-gradient--pressed {
   background: linear-gradient(to left, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+}
+
+.speed-up-gradient--exiting {
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.instruction-text--speed-up-exit {
+  opacity: 0;
+  transition: opacity 0.1s ease;
 }
 
 .instruction--speed-up {

@@ -37,6 +37,6 @@
     "duration_bounds": [1000, 3000],
     "time_limit": 2000,
     "blocking": true,
-    "position": { "vw": 90, "dvh": 70, "anchor": "center right" }
+    "position": { "vw": 90, "dvh": 62, "anchor": "center right" }
   }
 ]
