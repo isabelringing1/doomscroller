@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Bookmark, Heart, MessageCircle, Share2 } from 'lucide-react'
 import { generateCaption } from './Util.js'
-import { playerAction, togglePageEngagement } from './store.js'
+import { playerAction, togglePageEngagement, openComments } from './store.js'
 
 export default function PageMenu({ index, active }) {
   const dispatch = useDispatch()
@@ -18,6 +18,9 @@ export default function PageMenu({ index, active }) {
     dispatch(playerAction({ type: 'button', name }))
     if (name === 'like' || name === 'save') {
       dispatch(togglePageEngagement({ pageIndex: index, name }))
+    }
+    if (name === 'comment') {
+      dispatch(openComments({ topBlueText: 'what is special 4th of july cheese' }))
     }
   }
 

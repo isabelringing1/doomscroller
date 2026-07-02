@@ -4,7 +4,8 @@ import Page from './Page.jsx'
 import Score from './Score.jsx'
 import GameOver from './GameOver.jsx'
 import TitlePage from './TitlePage.jsx'
-import { dismissTitle, beginGameplay, setIndex, setScrollDirection, playerAction, store } from './store.js'
+import CommentsPanel from './CommentsPanel.jsx'
+import { dismissTitle, beginGameplay, setIndex, setScrollDirection, playerAction, closeComments, store } from './store.js'
 import { isSpeedUpHolding } from './instructionJudge.js'
 import { MIN_PAGE_INDEX } from './pageMeta.js'
 
@@ -18,6 +19,8 @@ export default function App() {
   const gameStarted = useSelector((s) => s.game.gameStarted)
   const titleDismissed = useSelector((s) => s.feed.titleDismissed)
   const health = useSelector((s) => s.game.health)
+  const commentsOpen = useSelector((s) => s.game.commentsOpen)
+  const commentsTopBlueText = useSelector((s) => s.game.commentsTopBlueText)
   const dispatch = useDispatch()
   const containerRef = useRef(null)
   const ignoreScrollRef = useRef(false)
@@ -203,10 +206,21 @@ export default function App() {
     }
   }, [dispatch, currentIndex, gameStarted, titleDismissed])
 
+  useEffect(() => {
+    dispatch(closeComments())
+  }, [currentIndex, dispatch])
+
   return (
     <>
       {titleDismissed && <Score />}
       {titleDismissed && health <= 0 && <GameOver />}
+      {titleDismissed && (
+        <CommentsPanel
+          isOpen={commentsOpen}
+          onClose={() => dispatch(closeComments())}
+          topBlueText={commentsTopBlueText}
+        />
+      )}
       <div
         ref={containerRef}
         className={`feed${!gameStarted ? ' feed--title' : ''}`}
