@@ -213,12 +213,6 @@ button{
   height: 100%;
   width: 0;
   background: #fff;
-  animation: page-duration-fill linear forwards;
-}
-
-@keyframes page-duration-fill {
-  from { width: 0; }
-  to { width: 100%; }
 }
 
 .instructions-layer {
