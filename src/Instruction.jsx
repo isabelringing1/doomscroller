@@ -28,6 +28,7 @@ export default function Instruction({
   const [fadeOutActive, setFadeOutActive] = useState(false)
   const [exiting, setExiting] = useState(false)
   const [speedUpPressed, setSpeedUpPressed] = useState(false)
+  const [commentsWasOpened, setCommentsWasOpened] = useState(false)
 
   const sessionMatchesPage = session?.pageIndex === pageIndex
   const instructionState = sessionMatchesPage ? session.states[instructionIndex] : null
@@ -35,8 +36,10 @@ export default function Instruction({
   const isCompleted = instructionState?.status === 'completed'
   const blocked = sessionMatchesPage && isInstructionBlocked(session, instructionIndex)
   const overlayGated = type.comments_overlay && !commentsOpen
-  const timerVisible = timerReady && !blocked && !overlayGated
-  const displayed = timerVisible || exiting
+  const commentsHandled = type.id === 'comments'
+    && (commentsWasOpened || isCompleted || feedback === 'success')
+  const timerVisible = timerReady && !blocked && !overlayGated && !commentsHandled
+  const displayed = (timerVisible || exiting) && !commentsHandled
   const visible = timerVisible
 
   const isActiveScrollInstruction =
@@ -54,14 +57,22 @@ export default function Instruction({
     || (type.id === 'scroll_up' && scrollDirection === 'up')
 
   useEffect(() => {
+    if (type.id === 'comments' && commentsOpen) {
+      setCommentsWasOpened(true)
+    }
+  }, [type.id, commentsOpen])
+
+  useEffect(() => {
     if (!active) {
       setTimerReady(false)
       setSpeedUpPressed(false)
+      setCommentsWasOpened(false)
       dispatch(setSpeedUpHeld(false))
       return
     }
     setTimerReady(false)
     setSpeedUpPressed(false)
+    setCommentsWasOpened(false)
     dispatch(setSpeedUpHeld(false))
     setRunId((id) => id + 1)
   }, [active, dispatch])
