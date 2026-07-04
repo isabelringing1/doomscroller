@@ -31,3 +31,11 @@ export function rollInstructionDuration(index, durationBounds, salt, generation 
 export function pickInstructionTypeIndex(index, typeCount, generation = 0) {
   return Math.floor(stableUnit(index, 'instruction-type', generation) * typeCount)
 }
+
+export function rollPercent(index, salt, generation = 0) {
+  return stableUnit(index, salt, generation) * 100
+}
+
+export function rollInt(index, salt, generation = 0, maxInclusive = 100) {
+  return Math.floor(stableUnit(index, salt, generation) * (maxInclusive + 1))
+}

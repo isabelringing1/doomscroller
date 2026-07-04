@@ -1,14 +1,10 @@
 import instructionTypes from './Instructions.json'
 import captions from './captions.json'
-import { pickInstructionTypeIndex, rollInstructionDuration, rollInstructionTimeMs, timeScalarForIndex } from './pageMeta.js'
+import { rollInstructionDuration, rollInstructionTimeMs, rollInt, rollPercent, timeScalarForIndex } from './pageMeta.js'
 
-export const DEBUG_INSTRUCTIONS = ['watch', 'comments', 'scroll_comments', 'close_comments', 'scroll_down']
+export const DEBUG_INSTRUCTIONS = []//['watch', 'comments', 'scroll_comments', 'close_comments', 'scroll_down']
 
 const instructionTypeById = Object.fromEntries(instructionTypes.map((type) => [type.id, type]))
-const actionableTypes = instructionTypes.filter((t) => !t.unjudgeable && !t.comments_overlay)
-const commentsOverlayTypes = instructionTypes.filter((t) => t.comments_overlay)
-const unjudgeableType = instructionTypes.find((t) => t.unjudgeable)
-const scrollDownType = instructionTypes.find((t) => t.id === 'scroll_down')
 
 export function anchorAlign(anchor) {
   if (anchor === 'center left') return 'left'
@@ -69,6 +65,45 @@ export function generateCaption() {
   return { phrase, hashtags }
 }
 
+function buildInstructionIdSequence(index, generation) {
+  const ids = ['watch']
+
+  if (rollPercent(index, 'scroll-down-early', generation) < 30) {
+    ids.push('scroll_down')
+    return ids
+  }
+
+  if (rollPercent(index, 'speed-up-or-comments', generation) < 75) {
+    ids.push('speed_up')
+    if (rollPercent(index, 'comments-after-speed-up', generation) < 30) {
+      ids.push('comments')
+    }
+  } else {
+    ids.push('comments')
+  }
+
+  if (ids[ids.length - 1] === 'comments') {
+    if (rollPercent(index, 'comments-overlay', generation) < 70) {
+      ids.push('scroll_comments', 'close_comments')
+    } else {
+      ids.push('close_comments')
+    }
+  }
+
+  const engagementRoll = rollInt(index, 'like-or-save', generation)
+  if (engagementRoll <= 30) {
+    ids.push('like')
+  } else if (engagementRoll <= 40) {
+    ids.push('save')
+  }
+
+  if (ids[ids.length - 1] !== 'scroll_down') {
+    ids.push('scroll_down')
+  }
+
+  return ids
+}
+
 export function generateInstructions(index, generation = 0, zenMode = false) {
   const scalar = zenMode ? 1 : timeScalarForIndex(index)
 
@@ -97,27 +132,8 @@ export function generateInstructions(index, generation = 0, zenMode = false) {
     })
   }
 
-  const type = actionableTypes[pickInstructionTypeIndex(index, actionableTypes.length, generation)]
-
-  const instructions = [
-    buildInstruction(unjudgeableType, unjudgeableType.id, unjudgeableType.time_bounds),
-    buildInstruction(type, type.id, type.time_bounds),
-  ]
-
-  if (type.id === 'comments' && commentsOverlayTypes.length > 0) {
-    const overlayType = commentsOverlayTypes[
-      pickInstructionTypeIndex(index, commentsOverlayTypes.length, `${generation}:comments-overlay`)
-    ]
-    instructions.push(
-      buildInstruction(overlayType, overlayType.id, overlayType.time_bounds),
-    )
-  }
-
-  if (type.id !== 'scroll_down') {
-    instructions.push(
-      buildInstruction(scrollDownType, 'scroll_down', scrollDownType.time_bounds),
-    )
-  }
-
-  return instructions
+  return buildInstructionIdSequence(index, generation).map((id) => {
+    const instructionType = instructionTypeById[id]
+    return buildInstruction(instructionType, id, instructionType.time_bounds)
+  })
 }
