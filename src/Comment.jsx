@@ -12,7 +12,7 @@ export default function Comment() {
     <div className="comment">
       <div className="comment-pfp" aria-hidden="true" />
       <div className="comment-body">
-        <div className="comment-username">Comment</div>
+        <div className="comment-username" aria-hidden="true" />
         <div
           className="comment-content"
           style={{ height: `${contentHeight}dvh` }}

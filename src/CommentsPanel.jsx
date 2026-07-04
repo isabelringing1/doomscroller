@@ -95,7 +95,7 @@ export default function CommentsPanel({ isOpen, onClose, topBlueText = null }) {
             </div>
           )}
           <div className="comments-title-row">
-            <div className="comments-title">1,320 comments</div>
+            <div className="comments-title" aria-hidden="true" />
             <ListFilter size={18} className="comments-sort-icon" aria-hidden="true" />
             <button type="button" className="comments-close" onClick={handleClose} aria-label="Close comments">
               <X size={22} />
@@ -112,7 +112,7 @@ export default function CommentsPanel({ isOpen, onClose, topBlueText = null }) {
         <div className="comments-input-bar">
           <div className="comments-input-pfp" aria-hidden="true" />
           <div className="comments-input-field">
-            <span className="comments-input-placeholder">Add comment...</span>
+            <span className="comments-input-placeholder"></span>
             <div className="comments-input-actions">
               <Image size={20} aria-hidden="true" />
               <Smile size={20} aria-hidden="true" />

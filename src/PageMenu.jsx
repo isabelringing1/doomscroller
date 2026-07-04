@@ -20,7 +20,7 @@ export default function PageMenu({ index, active }) {
       dispatch(togglePageEngagement({ pageIndex: index, name }))
     }
     if (name === 'comment') {
-      dispatch(openComments({ topBlueText: 'what is special 4th of july cheese' }))
+      dispatch(openComments())//{ topBlueText: 'what is special 4th of july cheese' }
     }
   }
 

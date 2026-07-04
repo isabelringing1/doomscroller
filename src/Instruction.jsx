@@ -38,7 +38,7 @@ export default function Instruction({
   const overlayGated = type.comments_overlay && !commentsOpen
   const commentsHandled = type.id === 'comments'
     && (commentsWasOpened || isCompleted || feedback === 'success')
-  const timerVisible = timerReady && !blocked && !overlayGated && !commentsHandled
+  const timerVisible = timerReady && !blocked && !overlayGated && !commentsHandled && !isCompleted
   const displayed = (timerVisible || exiting) && !commentsHandled
   const visible = timerVisible
 
@@ -79,11 +79,12 @@ export default function Instruction({
 
   useEffect(() => {
     if (!active) return
+    if (isCompleted) return
     if (type.comments_overlay && !commentsOpen) return
     if (type.comments_overlay && blocked) return
     const timer = setTimeout(() => setTimerReady(true), timeMs)
     return () => clearTimeout(timer)
-  }, [active, runId, timeMs, type.comments_overlay, commentsOpen, blocked])
+  }, [active, runId, timeMs, type.comments_overlay, commentsOpen, blocked, isCompleted])
 
   useEffect(() => {
     if (!active || !visible) return

@@ -37,7 +37,7 @@
     "time_limit": 2000,
     "blocking": true,
     "comments_overlay": true,
-    "position": { "vw": 85, "dvh": 70 }
+    "position": { "vw": 89, "dvh": 69.5 }
   },
   {
     "id": "scroll_comments",
@@ -58,7 +58,7 @@
   },
   {
     "id": "speed_up",
-    "display_text": "Press",
+    "display_text": "Hold",
     "time_bounds": [800, 1000],
     "duration_bounds": [1000, 2000],
     "time_limit": 2000,
