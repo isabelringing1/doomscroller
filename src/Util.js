@@ -83,11 +83,7 @@ function buildInstructionIdSequence(index, generation) {
   }
 
   if (ids[ids.length - 1] === 'comments') {
-    if (rollPercent(index, 'comments-overlay', generation) < 90) {
-      ids.push('scroll_comments', 'close_comments')
-    } else {
-      ids.push('close_comments')
-    }
+    ids.push('scroll_comments', 'close_comments')
   }
 
   const engagementRoll = rollInt(index, 'like-or-save', generation)
