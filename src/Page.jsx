@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useLayoutEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import PageMenu from './PageMenu.jsx'
 import PageDuration from './PageDuration.jsx'
@@ -20,7 +20,7 @@ export default function Page({ index, active }) {
     [index, feedGeneration],
   )
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!active) return
     dispatch(instructionPageActive({ pageIndex: index, instructions }))
   }, [active, index, instructions, dispatch])

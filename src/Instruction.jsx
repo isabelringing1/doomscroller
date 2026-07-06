@@ -47,9 +47,9 @@ export default function Instruction({
   const commentsHandled = type.id === 'comments'
     && (commentsWasOpened || isCompleted || feedback === 'success')
   const solidUntilNext = usesSolidUntilNextFade(type.id)
-  const timerVisible = timerReady && !blocked && !overlayGated && !commentsHandled
+  const timerVisible = sessionMatchesPage && timerReady && !blocked && !overlayGated && !commentsHandled
     && (!isCompleted || solidUntilNext)
-  const displayed = (timerVisible || exiting) && !commentsHandled
+  const displayed = sessionMatchesPage && (timerVisible || exiting) && !commentsHandled
   const visible = timerVisible
 
   const isActiveScrollInstruction =
@@ -159,12 +159,12 @@ export default function Instruction({
   }, [solidUntilNext, active, shown, exiting, nextInstructionVisible])
 
   useEffect(() => {
+    if (exiting) return
     if (!visible) {
-      if (!exiting) setShown(false)
+      setShown(false)
       return
     }
     setShown(false)
-    setExiting(false)
     const frame = requestAnimationFrame(() => setShown(true))
     return () => cancelAnimationFrame(frame)
   }, [visible, runId, exiting])
