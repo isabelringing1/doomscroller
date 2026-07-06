@@ -29,6 +29,7 @@ export default function Instruction({
   const [exiting, setExiting] = useState(false)
   const [speedUpPressed, setSpeedUpPressed] = useState(false)
   const [commentsWasOpened, setCommentsWasOpened] = useState(false)
+  const [thinkDisplayText, setThinkDisplayText] = useState(null)
 
   const sessionMatchesPage = session?.pageIndex === pageIndex
   const instructionState = sessionMatchesPage ? session.states[instructionIndex] : null
@@ -73,6 +74,7 @@ export default function Instruction({
     setTimerReady(false)
     setSpeedUpPressed(false)
     setCommentsWasOpened(false)
+    setThinkDisplayText(null)
     dispatch(setSpeedUpHeld(false))
     setRunId((id) => id + 1)
   }, [active, dispatch])
@@ -90,6 +92,13 @@ export default function Instruction({
     if (!active || !visible) return
     dispatch(instructionVisible({ pageIndex, instructionIndex }))
   }, [active, visible, pageIndex, instructionIndex, dispatch])
+
+  useEffect(() => {
+    if (!visible || type.id !== 'think' || thinkDisplayText) return
+    const texts = type.display_texts
+    if (!texts?.length) return
+    setThinkDisplayText(texts[Math.floor(Math.random() * texts.length)])
+  }, [visible, type.id, type.display_texts, thinkDisplayText])
 
   useEffect(() => {
     if (type.unjudgeable) return
@@ -135,6 +144,9 @@ export default function Instruction({
   }, [visible, runId, exiting])
 
   if (!active || !displayed) return null
+  if (type.id === 'think' && !thinkDisplayText) return null
+
+  const displayText = type.id === 'think' ? thinkDisplayText : type.display_text
 
   const isSpeedUpHolding = type.id === 'speed_up' && speedUpPressed && !feedback && !isCompleted
   const isSuccess =
@@ -208,7 +220,7 @@ export default function Instruction({
             className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${exiting ? ' instruction-text--speed-up-exit' : ''}${showFadeOut ? ' instruction-text--fade-out' : ''}`}
             style={showFadeOut ? { animationDuration: `${fadeOutDurationMs}ms` } : undefined}
           >
-            {type.display_text}
+            {displayText}
           </span>
         </div>
       </div>
@@ -224,7 +236,7 @@ export default function Instruction({
         className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${showFadeOut ? ' instruction-text--fade-out' : ''}`}
         style={showFadeOut ? { animationDuration: `${fadeOutDurationMs}ms` } : undefined}
       >
-        {type.display_text}
+        {displayText}
       </span>
     </div>
   )

@@ -93,7 +93,28 @@ export function setupInstructionJudge({
 
       const instruction = session.instructions[instructionIndex]
       const timeLimit = instruction.timeLimit
-      if (!timeLimit || instruction.type.unjudgeable) return
+
+      if (instruction.type.unjudgeable) {
+        if (instruction.holdDurationMs) {
+          await api.delay(instruction.holdDurationMs)
+
+          while (isSpeedUpHolding(pageIndex)) {
+            await api.delay(50)
+          }
+
+          const { health, instructionSession: current } = api.getState().game
+          if (health <= 0) return
+          if (!current || current.pageIndex !== pageIndex) return
+
+          const state = current.states[instructionIndex]
+          if (!state || state.status !== 'pending' || !state.visible || state.feedback) return
+
+          api.dispatch(instructionCompleted({ instructionIndex }))
+        }
+        return
+      }
+
+      if (!timeLimit) return
 
       await api.delay(timeLimit)
 

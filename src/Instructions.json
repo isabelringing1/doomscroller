@@ -7,6 +7,15 @@
     "position": { "vw": 50, "dvh": 50 }
   },
   {
+    "id": "think",
+    "display_texts": ["Think", "Squint", "Snort"],
+    "time_bounds": [2000, 2000],
+    "duration_bounds": [2000, 2000],
+    "unjudgeable": true,
+    "blocking": true,
+    "position": { "vw": 50, "dvh": 50 }
+  },
+  {
     "id": "scroll_down",
     "display_text": "Scroll ↓",
     "time_bounds": [1000, 3000],

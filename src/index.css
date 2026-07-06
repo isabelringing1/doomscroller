@@ -112,8 +112,8 @@ button{
 
 .zen-mode-button {
   background: #61bbff !important;
-  bottom: 15dvh;
-  position: absolute;
+  bottom: -10dvh;
+  position: relative;
 }
 
 .title-page-buttons {

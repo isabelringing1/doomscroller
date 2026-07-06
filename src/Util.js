@@ -2,7 +2,7 @@ import instructionTypes from './Instructions.json'
 import captions from './captions.json'
 import { rollInstructionDuration, rollInstructionTimeMs, rollInt, rollPercent, timeScalarForIndex } from './pageMeta.js'
 
-export const DEBUG_INSTRUCTIONS =['watch', 'speed_up', 'comments', 'scroll_comments', 'close_comments', 'scroll_down']
+export const DEBUG_INSTRUCTIONS = []//['watch', 'think', 'comments', 'scroll_comments', 'close_comments', 'scroll_down']
 
 const instructionTypeById = Object.fromEntries(instructionTypes.map((type) => [type.id, type]))
 
@@ -71,6 +71,10 @@ function buildInstructionIdSequence(index, generation) {
   if (rollPercent(index, 'scroll-down-early', generation) < 30) {
     ids.push('scroll_down')
     return ids
+  }
+
+  if (rollPercent(index, 'think', generation) < 70) {
+    ids.push('think')
   }
 
   if (rollPercent(index, 'speed-up-or-comments', generation) < 75) {
