@@ -2,7 +2,7 @@ import instructionTypes from './Instructions.json'
 import captions from './captions.json'
 import { rollInstructionDuration, rollInstructionTimeMs, rollInt, rollPercent, timeScalarForIndex } from './pageMeta.js'
 
-export const DEBUG_INSTRUCTIONS =  ['watch', 'like', 'comments', 'scroll_comments', 'close_comments', 'scroll_down']
+export const DEBUG_INSTRUCTIONS =  []// ['watch', 'think', 'comments', 'scroll_comments', 'close_comments', 'scroll_down']
 
 const instructionTypeById = Object.fromEntries(instructionTypes.map((type) => [type.id, type]))
 

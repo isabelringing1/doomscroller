@@ -5,6 +5,7 @@ import { instructionVisible, playerAction, setSpeedUpHeld } from './store.js'
 
 const FADE_MS = 400
 const SPEED_UP_COMPLETE_MS = 100
+const WATCH_EXIT_MS = 200
 const DEFAULT_FADE_OUT_MS = 2000
 
 export default function Instruction({
@@ -33,6 +34,8 @@ export default function Instruction({
 
   const sessionMatchesPage = session?.pageIndex === pageIndex
   const instructionState = sessionMatchesPage ? session.states[instructionIndex] : null
+  const nextInstructionVisible = sessionMatchesPage
+    && session.states[instructionIndex + 1]?.visible
   const feedback = instructionState?.feedback ?? null
   const isCompleted = instructionState?.status === 'completed'
   const blocked = sessionMatchesPage && isInstructionBlocked(session, instructionIndex)
@@ -124,13 +127,30 @@ export default function Instruction({
   }, [isCompleted, type.unjudgeable, type.id, dispatch])
 
   useEffect(() => {
+    if (type.id === 'watch') return
     if (!shown || isCompleted || exiting) {
       setFadeOutActive(false)
       return
     }
     const timer = setTimeout(() => setFadeOutActive(true), FADE_MS)
     return () => clearTimeout(timer)
-  }, [shown, isCompleted, exiting, runId])
+  }, [type.id, shown, isCompleted, exiting, runId])
+
+  useEffect(() => {
+    if (type.id !== 'watch') return
+    if (!active || !shown || exiting) return
+    if (!nextInstructionVisible) return
+
+    setFadeOutActive(true)
+    setExiting(true)
+    const timer = setTimeout(() => {
+      setFadeOutActive(false)
+      setTimerReady(false)
+      setShown(false)
+      setExiting(false)
+    }, WATCH_EXIT_MS)
+    return () => clearTimeout(timer)
+  }, [type.id, active, shown, exiting, nextInstructionVisible])
 
   useEffect(() => {
     if (!visible) {
@@ -154,14 +174,15 @@ export default function Instruction({
     || isSpeedUpHolding
     || (scrollDirectionMatches && isActiveScrollInstruction)
     || (commentsScrolling && isActiveScrollCommentsInstruction)
-  const fadeOutDurationMs = timeLimit ?? DEFAULT_FADE_OUT_MS
-  const showFadeOut =
-    !zenMode
-    && fadeOutActive
-    && !isSuccess
-    && feedback !== 'failure'
-    && !isCompleted
-    && !exiting
+  const fadeOutDurationMs = type.id === 'watch' ? WATCH_EXIT_MS : (timeLimit ?? DEFAULT_FADE_OUT_MS)
+  const showFadeOut = type.id === 'watch'
+    ? exiting && fadeOutActive
+    : !zenMode
+      && fadeOutActive
+      && !isSuccess
+      && feedback !== 'failure'
+      && !isCompleted
+      && !exiting
 
   const feedbackClass =
     isSuccess

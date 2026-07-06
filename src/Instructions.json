@@ -55,7 +55,7 @@
     "time_limit": 2000,
     "blocking": true,
     "comments_overlay": true,
-    "position": { "vw": 85, "dvh": 70 }
+    "position": { "vw": 50, "dvh": 40 }
   },
   {
     "id": "save",
