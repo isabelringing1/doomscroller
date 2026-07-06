@@ -4,6 +4,11 @@ import { rollInstructionDuration, rollInstructionTimeMs, rollInt, rollPercent, t
 
 export const DEBUG_INSTRUCTIONS =  []// ['watch', 'think', 'comments', 'scroll_comments', 'close_comments', 'scroll_down']
 
+export function isMobileDevice() {
+  return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    || window.matchMedia('(hover: none) and (pointer: coarse)').matches
+}
+
 const instructionTypeById = Object.fromEntries(instructionTypes.map((type) => [type.id, type]))
 
 export function anchorAlign(anchor) {

@@ -85,6 +85,16 @@ button{
   justify-content: center;
 }
 
+.title-page-desktop-message {
+  margin: 0;
+  max-width: 36rem;
+  padding: 0 2rem;
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+}
+
 .title-page-heading {
   margin: 0;
   font-size: 8vw;
