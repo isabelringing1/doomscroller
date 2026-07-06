@@ -214,7 +214,7 @@ export default function App() {
 
   return (
     <>
-      {titleDismissed && <Score />}
+      {titleDismissed && !store.getState().game.zenMode && <Score />}
       {titleDismissed && health <= 0 && <GameOver />}
       {titleDismissed && (
         <CommentsPanel

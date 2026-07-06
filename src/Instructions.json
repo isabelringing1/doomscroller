@@ -8,7 +8,7 @@
   },
   {
     "id": "think",
-    "display_texts": ["Think", "Squint", "Snort"],
+    "display_texts": ["Think", "Squint", "Snort", "Double-Take", "Scoff", "Doubt", "Raise an Eyebrow"],
     "time_bounds": [2000, 2000],
     "duration_bounds": [2000, 2000],
     "unjudgeable": true,
@@ -29,7 +29,7 @@
     "time_bounds": [3000, 3000],
     "time_limit": 2000,
     "blocking": true,
-    "position": { "vw": 80, "dvh": 30, "anchor": "center right" }
+    "position": { "vw": 80, "dvh": 35.5, "anchor": "center right" }
   },
   {
     "id": "comments",
@@ -37,7 +37,7 @@
     "time_bounds": [3000, 3000],
     "time_limit": 2000,
     "blocking": true,
-    "position": { "vw": 80, "dvh": 23, "anchor": "center right" }
+    "position": { "vw": 80, "dvh": 26, "anchor": "center right" }
   },
   {
     "id": "close_comments",
