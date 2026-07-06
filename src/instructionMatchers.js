@@ -22,7 +22,7 @@ export const instructionMatchers = {
     action.type === 'close_comments',
 
   scroll_comments: (action) =>
-    action.type === 'scroll_comments' && action.phase === 'end',
+    action.type === 'scroll_comments',
 
   save: (action) =>
     action.type === 'button' && action.name === 'save',
