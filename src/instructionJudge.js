@@ -136,11 +136,13 @@ export function setupInstructionJudge({
   instructionListener.startListening({
     actionCreator: playerAction,
     effect: async (action, api) => {
-      const { health, zenMode, instructionSession: session } = api.getState().game
+      const { health, zenMode, instructionSession: session, commentsOpen } = api.getState().game
       if (health <= 0) return
       if (session?.status === 'completed') return
 
       if (session?.states?.some((state) => state.feedback)) return
+
+      if (commentsOpen && action.payload.type === 'scroll') return
 
       if (session && isSpeedUpHolding(session.pageIndex) && action.payload.type !== 'speed_up') {
         return
@@ -196,23 +198,25 @@ export function setupInstructionJudge({
           ({ instruction }) => instruction.type.id === 'scroll_comments',
         )
 
-        if (scrollComments) {
-          if (action.payload.phase === 'scroll') {
+        if (action.payload.phase === 'scroll') {
+          if (scrollComments) {
             scrollCommentsActive.set(getScrollCommentsKey(session.pageIndex, scrollComments.i), true)
-            return
           }
+          return
+        }
 
-          if (action.payload.phase === 'end') {
+        if (action.payload.phase === 'end') {
+          if (scrollComments) {
             const key = getScrollCommentsKey(session.pageIndex, scrollComments.i)
             if (scrollCommentsActive.get(key)) {
               scrollCommentsActive.delete(key)
               completeInstruction(api, scrollComments.i)
             }
-            return
           }
-
           return
         }
+
+        return
       }
 
       if (session) {

@@ -48,7 +48,8 @@ export default function App() {
   }
 
   function dispatchScrollAction(direction, scrollTop, h) {
-    const session = store.getState().game.instructionSession
+    const { instructionSession: session, commentsOpen } = store.getState().game
+    if (commentsOpen) return
     if (isSpeedUpHolding(session?.pageIndex)) return
 
     const slot = Math.round(scrollTop / h)
@@ -123,6 +124,7 @@ export default function App() {
 
     const sync = () => {
       if (ignoreScrollRef.current || !titleDismissed) return
+      if (store.getState().game.commentsOpen) return
       const h = el.clientHeight
       const slot = Math.round(el.scrollTop / h)
       const rawIndex = currentIndex + (slot - PAGES_BEFORE)
@@ -132,8 +134,8 @@ export default function App() {
         ignoreScrollRef.current = true
         el.scrollTop = PAGES_BEFORE * h
         lastScrollTopRef.current = el.scrollTop
-        const session = store.getState().game.instructionSession
-        if (!isSpeedUpHolding(session?.pageIndex)) {
+        const { instructionSession: session, commentsOpen } = store.getState().game
+        if (!commentsOpen && !isSpeedUpHolding(session?.pageIndex)) {
           dispatch(playerAction({ type: 'scroll', direction: 'up' }))
         }
         requestAnimationFrame(() => { ignoreScrollRef.current = false })
