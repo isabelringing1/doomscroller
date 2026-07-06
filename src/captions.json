@@ -13,14 +13,14 @@
     "phrase_data": [
       ["restaurant", "bar", "cafe", "store", "museum"],
       ["nyc", "sf", "seattle", "la", "seoul", "london"],
-      ["relaxing", "doodling", "coworking", "napping", "doing your taxes", "crying"]
+      ["chilling","coworking", "napping", "doing your taxes", "crying"]
     ],
     "hashtags": ["fyp", "travel", "food", "explorepage", "inspo"]
   },
   {
     "phrase": "grwm to {0}",
     "phrase_data": [
-      ["go to the pool", "get laid off", "break up with my cheating bf", "go on a first date"]
+      ["go to the pool", "get laid off", "break up with my cheating bf", "go on a first date post divorce"]
     ],
     "hashtags": ["fyp", "explorepage", "grwm", "summer", "beauty", "yap"]
   },
@@ -36,8 +36,8 @@
   {
     "phrase": "what i packed for my {0} hour shift {1}",
     "phrase_data": [
-      ["8", "12", "16", "24"],
-      ["at the hospital", "at the ER", "at my corporate job", "doing construction", "at a warehouse"]
+      ["48", "24", "72"],
+      ["at the ER", "at my tech slop job", "at FurCon 2026", "at the bubble gun warehouse"]
     ],
     "hashtags": ["fyp", "explorepage", "work", "lunch", "foodie", "sourdough", "sandwich", "mexicanfood"]
   },
@@ -45,14 +45,14 @@
     "phrase": "asmr {0} {1}",
     "phrase_data": [
       ["food", "slime", "mukbang", "cat spa", "dog spa", "fridge restock"],
-      ["USA", "crunchy", "💥", "vlog"]
+      ["uncensored", "crunchy", "💥", "forbidden..."]
     ],
     "hashtags": ["fyp", "explorepage", "asmr", "sleep", "asmrtok", "yum"]
   },
   {
     "phrase": "that one friend who {0}",
     "phrase_data": [
-      ["has a crush on your bf", "low key hates you", "always has her phone at 0%", "couldn't lie to save her life"]
+      ["definitely has committed murder", "low key hates you", "eats grass", "thinks she has ESP"]
     ],
     "hashtags": ["fyp", "explorepage", "skit", "funny", "relationshipgoals", "comedy"]
   }

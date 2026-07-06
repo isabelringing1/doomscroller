@@ -58,6 +58,26 @@ button{
   animation: score-value-pulse 0.4s ease-in-out;
 }
 
+.speed-up-notice {
+  position: fixed;
+  top: max(2.5dvh, env(safe-area-inset-top, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  font-weight: 600;
+  font-size: 7vw;
+  color: #ff0000;
+  pointer-events: none;
+  animation: speed-up-notice-fade 1.4s ease-in forwards;
+}
+
+@keyframes speed-up-notice-fade {
+  0% { opacity: 0; }
+  14.286% { opacity: 1; }
+  85.714% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 .feed {
   height: 100dvh;
   overflow-y: scroll;
@@ -373,13 +393,12 @@ button{
 
 .game-over-popup {
   width: 70vw;
-  aspect-ratio: 3 / 4;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1.5dvh;
-  padding: 3dvh;
+  padding: 6dvh;
   box-sizing: border-box;
   background: #e3e3e3;
   border-radius: 16px;
@@ -391,8 +410,6 @@ button{
   margin: 0;
   font-size: 8vw;
   font-weight: 600;
-  position: relative;
-  bottom: 3dvh;
 }
 
 .game-over-score {
@@ -415,8 +432,7 @@ button{
 }
 
 .game-over-start-over {
-  position: relative;
-  bottom: -5dvh;
+  margin-top: 2dvh;
   padding: 12px 28px;
 }
 

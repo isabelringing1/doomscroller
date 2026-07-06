@@ -5,8 +5,12 @@ import { instructionVisible, playerAction, setSpeedUpHeld } from './store.js'
 
 const FADE_MS = 400
 const SPEED_UP_COMPLETE_MS = 100
-const WATCH_EXIT_MS = 200
+const SOLID_EXIT_MS = 200
 const DEFAULT_FADE_OUT_MS = 2000
+
+function usesSolidUntilNextFade(typeId) {
+  return typeId === 'watch' || typeId === 'think'
+}
 
 export default function Instruction({
   type,
@@ -42,7 +46,9 @@ export default function Instruction({
   const overlayGated = type.comments_overlay && !commentsOpen
   const commentsHandled = type.id === 'comments'
     && (commentsWasOpened || isCompleted || feedback === 'success')
-  const timerVisible = timerReady && !blocked && !overlayGated && !commentsHandled && !isCompleted
+  const solidUntilNext = usesSolidUntilNextFade(type.id)
+  const timerVisible = timerReady && !blocked && !overlayGated && !commentsHandled
+    && (!isCompleted || solidUntilNext)
   const displayed = (timerVisible || exiting) && !commentsHandled
   const visible = timerVisible
 
@@ -127,17 +133,17 @@ export default function Instruction({
   }, [isCompleted, type.unjudgeable, type.id, dispatch])
 
   useEffect(() => {
-    if (type.id === 'watch') return
+    if (solidUntilNext) return
     if (!shown || isCompleted || exiting) {
       setFadeOutActive(false)
       return
     }
     const timer = setTimeout(() => setFadeOutActive(true), FADE_MS)
     return () => clearTimeout(timer)
-  }, [type.id, shown, isCompleted, exiting, runId])
+  }, [solidUntilNext, shown, isCompleted, exiting, runId])
 
   useEffect(() => {
-    if (type.id !== 'watch') return
+    if (!solidUntilNext) return
     if (!active || !shown || exiting) return
     if (!nextInstructionVisible) return
 
@@ -148,9 +154,9 @@ export default function Instruction({
       setTimerReady(false)
       setShown(false)
       setExiting(false)
-    }, WATCH_EXIT_MS)
+    }, SOLID_EXIT_MS)
     return () => clearTimeout(timer)
-  }, [type.id, active, shown, exiting, nextInstructionVisible])
+  }, [solidUntilNext, active, shown, exiting, nextInstructionVisible])
 
   useEffect(() => {
     if (!visible) {
@@ -174,8 +180,8 @@ export default function Instruction({
     || isSpeedUpHolding
     || (scrollDirectionMatches && isActiveScrollInstruction)
     || (commentsScrolling && isActiveScrollCommentsInstruction)
-  const fadeOutDurationMs = type.id === 'watch' ? WATCH_EXIT_MS : (timeLimit ?? DEFAULT_FADE_OUT_MS)
-  const showFadeOut = type.id === 'watch'
+  const fadeOutDurationMs = solidUntilNext ? SOLID_EXIT_MS : (timeLimit ?? DEFAULT_FADE_OUT_MS)
+  const showFadeOut = solidUntilNext
     ? exiting && fadeOutActive
     : !zenMode
       && fadeOutActive

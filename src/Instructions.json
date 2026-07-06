@@ -8,7 +8,7 @@
   },
   {
     "id": "think",
-    "display_texts": ["Think", "Squint", "Snort", "Double-Take", "Scoff", "Doubt", "Raise an Eyebrow"],
+    "display_texts": ["Think", "Squint", "Snort", "Double-Take", "Scoff", "Cringe", "Raise an Eyebrow", "Frown", "Smile"],
     "time_bounds": [2000, 2000],
     "duration_bounds": [2000, 2000],
     "unjudgeable": true,

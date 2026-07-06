@@ -1,7 +1,13 @@
 export const MIN_PAGE_INDEX = 0
+export const SPEED_UP_PERCENT = 0.1
+export const SPEED_UP_INTERVAL = 5
+
+export function speedUpTierForIndex(index) {
+  return Math.floor(index / SPEED_UP_INTERVAL)
+}
 
 export function timeScalarForIndex(index) {
-  return Math.max(0, 1 - 0.05 * Math.floor(index / 3))
+  return Math.max(0, 1 - SPEED_UP_PERCENT * speedUpTierForIndex(index))
 }
 
 export function durationForIndex(index, generation = 0) {

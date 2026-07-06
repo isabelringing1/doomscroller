@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Page from './Page.jsx'
 import Score from './Score.jsx'
+import SpeedUpNotice from './SpeedUpNotice.jsx'
 import GameOver from './GameOver.jsx'
 import TitlePage from './TitlePage.jsx'
 import CommentsPanel from './CommentsPanel.jsx'
@@ -19,6 +20,7 @@ export default function App() {
   const gameStarted = useSelector((s) => s.game.gameStarted)
   const titleDismissed = useSelector((s) => s.feed.titleDismissed)
   const health = useSelector((s) => s.game.health)
+  const zenMode = useSelector((s) => s.game.zenMode)
   const commentsOpen = useSelector((s) => s.game.commentsOpen)
   const commentsTopBlueText = useSelector((s) => s.game.commentsTopBlueText)
   const dispatch = useDispatch()
@@ -214,7 +216,8 @@ export default function App() {
 
   return (
     <>
-      {titleDismissed && !store.getState().game.zenMode && <Score />}
+      {titleDismissed && !zenMode && <Score />}
+      {titleDismissed && !zenMode && <SpeedUpNotice />}
       {titleDismissed && health <= 0 && <GameOver />}
       {titleDismissed && (
         <CommentsPanel
