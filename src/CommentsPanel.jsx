@@ -1,8 +1,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { AtSign, Image, ListFilter, Search, Smile, X } from 'lucide-react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Comment from './Comment.jsx'
 import CommentsInstructions from './CommentsInstructions.jsx'
+import { isScrollCommentsInstructionDone } from './Util.js'
 import { playerAction, setCommentsScrolling } from './store.js'
 
 const SLIDE_MS = 150
@@ -11,9 +12,12 @@ const COMMENTS_SCROLL_END_MS = 80
 
 export default function CommentsPanel({ isOpen, onClose, topBlueText = null }) {
   const dispatch = useDispatch()
+  const currentIndex = useSelector((s) => s.feed.currentIndex)
+  const session = useSelector((s) => s.game.instructionSession)
   const panelRef = useRef(null)
   const listRef = useRef(null)
   const scrollEndTimerRef = useRef(null)
+  const ignoreCommentsScrollRef = useRef(false)
   const [mounted, setMounted] = useState(false)
   const comments = useMemo(
     () => Array.from({ length: COMMENT_COUNT }, (_, index) => index),
@@ -49,14 +53,28 @@ export default function CommentsPanel({ isOpen, onClose, topBlueText = null }) {
   }, [isOpen, mounted])
 
   useEffect(() => {
+    const sessionMatchesPage = session?.pageIndex === currentIndex
+    const done = sessionMatchesPage && isScrollCommentsInstructionDone(session)
+    ignoreCommentsScrollRef.current = done
+
+    if (done) {
+      clearTimeout(scrollEndTimerRef.current)
+      dispatch(setCommentsScrolling(false))
+    }
+  }, [session, currentIndex, dispatch])
+
+  useEffect(() => {
     const list = listRef.current
     if (!list || !isOpen) return
 
     const onScroll = () => {
+      if (ignoreCommentsScrollRef.current) return
+
       dispatch(setCommentsScrolling(true))
       dispatch(playerAction({ type: 'scroll_comments', phase: 'scroll' }))
       clearTimeout(scrollEndTimerRef.current)
       scrollEndTimerRef.current = setTimeout(() => {
+        if (ignoreCommentsScrollRef.current) return
         dispatch(playerAction({ type: 'scroll_comments', phase: 'end' }))
         dispatch(setCommentsScrolling(false))
       }, COMMENTS_SCROLL_END_MS)

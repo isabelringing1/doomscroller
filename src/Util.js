@@ -24,6 +24,14 @@ export function isInstructionBlocked(session, instructionIndex) {
   return prior.type.blocking === true && priorState.status !== 'completed'
 }
 
+export function isScrollCommentsInstructionDone(session) {
+  if (!session) return false
+  const index = session.instructions.findIndex((instruction) => instruction.type.id === 'scroll_comments')
+  if (index === -1) return false
+  const state = session.states[index]
+  return state?.status === 'completed' || state?.feedback === 'success'
+}
+
 function pickRandom(options) {
   return options[Math.floor(Math.random() * options.length)]
 }

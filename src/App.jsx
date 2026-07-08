@@ -169,6 +169,7 @@ export default function App() {
 
     const onScroll = () => {
       if (ignoreScrollRef.current) return
+      if (store.getState().game.commentsOpen) return
 
       if (!gameStarted) {
         if (el.scrollTop !== 0) el.scrollTop = 0

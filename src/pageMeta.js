@@ -1,5 +1,5 @@
 export const MIN_PAGE_INDEX = 0
-export const SPEED_UP_PERCENT = 0.1
+export const SPEED_UP_PERCENT = 0.2
 export const SPEED_UP_INTERVAL = 5
 
 export function speedUpTierForIndex(index) {

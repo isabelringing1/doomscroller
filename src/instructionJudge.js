@@ -1,5 +1,6 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit'
 import { instructionMatchers } from './instructionMatchers.js'
+import { isScrollCommentsInstructionDone } from './Util.js'
 
 export const instructionListener = createListenerMiddleware()
 
@@ -129,6 +130,16 @@ export function setupInstructionJudge({
       const state = current.states[instructionIndex]
       if (!state || state.status !== 'pending' || !state.visible || state.feedback) return
 
+      if (current.instructions[instructionIndex].type.id === 'scroll_comments') {
+        const { commentsOpen, commentsScrolling } = api.getState().game
+        const key = getScrollCommentsKey(pageIndex, instructionIndex)
+        if (commentsOpen && (commentsScrolling || scrollCommentsActive.get(key))) {
+          scrollCommentsActive.delete(key)
+          completeInstruction(api, instructionIndex)
+          return
+        }
+      }
+
       failInstruction(api, [instructionIndex])
     },
   })
@@ -193,6 +204,7 @@ export function setupInstructionJudge({
 
       if (action.payload.type === 'scroll_comments') {
         if (!session) return
+        if (isScrollCommentsInstructionDone(session)) return
 
         const scrollComments = getActiveJudgeable(session).find(
           ({ instruction }) => instruction.type.id === 'scroll_comments',
