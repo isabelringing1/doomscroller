@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Bookmark, Heart, MessageCircle, Share2 } from 'lucide-react'
+import { Bookmark, Heart, MessageCircle } from 'lucide-react'
+import share from '/share.png'
 import { generateCaption } from './Util.js'
 import { playerAction, togglePageEngagement, openComments } from './store.js'
 
@@ -40,14 +41,28 @@ export default function PageMenu({ index, active }) {
         </div>
       </div>
       <div className={`page-actions${chromeHidden ? ' page-actions--hidden' : ''}`}>
-        <button type="button" aria-label="Like" onClick={() => onButton('like')}>
-          <Heart size={28} fill={liked ? '#fff' : 'none'} />
+        <button
+          type="button"
+          className={`page-action${liked ? ' page-action--liked' : ''}`}
+          aria-label="Like"
+          onClick={() => onButton('like')}
+        >
+          <Heart size={28} />
         </button>
-        <button type="button" aria-label="Comment" onClick={() => onButton('comment')}><MessageCircle size={28} /></button>
-        <button type="button" aria-label="Save" onClick={() => onButton('save')}>
-          <Bookmark size={28} fill={saved ? '#fff' : 'none'} />
+        <button type="button" className="page-action" aria-label="Comment" onClick={() => onButton('comment')}>
+          <MessageCircle size={28} />
         </button>
-        <button type="button" aria-label="Share" onClick={() => onButton('share')}><Share2 size={28} /></button>
+        <button
+          type="button"
+          className={`page-action${saved ? ' page-action--saved' : ''}`}
+          aria-label="Save"
+          onClick={() => onButton('save')}
+        >
+          <Bookmark size={28} />
+        </button>
+        <button type="button" aria-label="Share" onClick={() => onButton('share')}>
+          <img src={share} alt="" width={28} height={28} />
+        </button>
       </div>
     </>
   )

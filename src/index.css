@@ -233,6 +233,21 @@ button{
 }
 .page-actions button:active { transform: scale(0.92); }
 
+.page-actions .page-action svg {
+  fill: #fff;
+  stroke: #fff;
+}
+
+.page-actions .page-action--liked svg {
+  fill: #ff4d5c;
+  stroke: #ff4d5c;
+}
+
+.page-actions .page-action--saved svg {
+  fill: #face15;
+  stroke: #face15;
+}
+
 .page-duration {
   position: absolute;
   bottom: var(--page-bottom);
