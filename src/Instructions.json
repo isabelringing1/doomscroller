@@ -29,7 +29,7 @@
     "time_bounds": [3000, 3000],
     "time_limit": 2000,
     "blocking": true,
-    "position": { "vw": 80, "dvh": 35.5, "anchor": "center right" }
+    "position": { "vw": 80, "dvh": 37.5, "anchor": "center right" }
   },
   {
     "id": "comments",
@@ -37,7 +37,7 @@
     "time_bounds": [3000, 3000],
     "time_limit": 2000,
     "blocking": true,
-    "position": { "vw": 80, "dvh": 26, "anchor": "center right" }
+    "position": { "vw": 80, "dvh": 28, "anchor": "center right" }
   },
   {
     "id": "close_comments",
@@ -58,12 +58,29 @@
     "position": { "vw": 50, "dvh": 40 }
   },
   {
+    "id": "share",
+    "display_text": "Share",
+    "time_bounds": [3000, 3000],
+    "time_limit": 2000,
+    "blocking": true,
+    "position": { "vw": 80, "dvh": 10, "anchor": "center right" }
+  },
+  {
+    "id": "send_post",
+    "display_text": "Select",
+    "time_bounds": [1000, 1000],
+    "time_limit": 2000,
+    "blocking": true,
+    "share_overlay": true,
+    "position": { "vw": 50, "dvh": 17 }
+  },
+  {
     "id": "save",
     "display_text": "Save",
     "time_bounds": [3000, 3000],
     "time_limit": 2000,
     "blocking": true,
-    "position": { "vw": 80, "dvh": 16, "anchor": "center right" }
+    "position": { "vw": 80, "dvh": 18.5, "anchor": "center right" }
   },
   {
     "id": "speed_up",

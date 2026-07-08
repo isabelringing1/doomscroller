@@ -1,8 +1,8 @@
 import instructionTypes from './Instructions.json'
 import captions from './captions.json'
-import { rollInstructionDuration, rollInstructionTimeMs, rollInt, rollPercent, timeScalarForIndex } from './pageMeta.js'
+import { MIN_PAGE_INDEX, rollInstructionDuration, rollInstructionTimeMs, rollInt, rollPercent, timeScalarForIndex } from './pageMeta.js'
 
-export const DEBUG_INSTRUCTIONS =  []// ['watch', 'think', 'comments', 'scroll_comments', 'close_comments', 'scroll_down']
+export const DEBUG_INSTRUCTIONS =  ['watch', 'share', 'send_post', 'scroll_down']
 
 export function isMobileDevice() {
   return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
@@ -17,8 +17,21 @@ export function anchorAlign(anchor) {
   return 'center'
 }
 
+export function hasPendingScrollUp(session) {
+  if (!session) return false
+  const scrollUpIndex = session.instructions.findIndex((instruction) => instruction.type.id === 'scroll_up')
+  return scrollUpIndex !== -1 && session.states[scrollUpIndex].status === 'pending'
+}
+
 export function isInstructionBlocked(session, instructionIndex) {
   if (!session || instructionIndex === 0) return false
+  const instruction = session.instructions[instructionIndex]
+  if (instruction.type.id === 'scroll_up') {
+    const scrollDownIndex = session.instructions.findIndex((item) => item.type.id === 'scroll_down')
+    if (scrollDownIndex !== -1 && session.states[scrollDownIndex].status !== 'completed') {
+      return true
+    }
+  }
   const prior = session.instructions[instructionIndex - 1]
   const priorState = session.states[instructionIndex - 1]
   return prior.type.blocking === true && priorState.status !== 'completed'
@@ -30,6 +43,34 @@ export function isScrollCommentsInstructionDone(session) {
   if (index === -1) return false
   const state = session.states[index]
   return state?.status === 'completed' || state?.feedback === 'success'
+}
+
+const ICON_INSTRUCTION_IDS = new Set(['like', 'comments', 'share', 'save'])
+
+export function isIconInstructionHighlighted(session, instructionId, { commentsOpen, shareOpen } = {}) {
+  if (!session || !ICON_INSTRUCTION_IDS.has(instructionId)) return false
+  const index = session.instructions.findIndex((instruction) => instruction.type.id === instructionId)
+  if (index === -1) return false
+  if (isInstructionBlocked(session, index)) return false
+
+  const state = session.states[index]
+  if (state.status !== 'pending' || !state.visible) return false
+  if (instructionId === 'comments' && commentsOpen) return false
+  if (instructionId === 'share' && shareOpen) return false
+
+  return true
+}
+
+export function getSendPostTargetIndex(session) {
+  if (!session) return null
+  const index = session.instructions.findIndex((instruction) => instruction.type.id === 'send_post')
+  if (index === -1) return null
+  if (isInstructionBlocked(session, index)) return null
+
+  const state = session.states[index]
+  if (state.status !== 'pending' || !state.visible) return null
+
+  return session.instructions[index].shareComponentIndex ?? null
 }
 
 function pickRandom(options) {
@@ -83,6 +124,9 @@ function buildInstructionIdSequence(index, generation) {
 
   if (rollPercent(index, 'scroll-down-early', generation) < 30) {
     ids.push('scroll_down')
+    if (index > MIN_PAGE_INDEX && rollPercent(index, 'scroll-up', generation) < 5) {
+      ids.push('scroll_up')
+    }
     return ids
   }
 
@@ -104,20 +148,30 @@ function buildInstructionIdSequence(index, generation) {
   }
 
   const engagementRoll = rollInt(index, 'like-or-save', generation)
-  if (engagementRoll <= 30) {
+  if (engagementRoll <= 28) {
     ids.push('like')
-  } else if (engagementRoll <= 40) {
+  } else if (engagementRoll <= 36) {
     ids.push('save')
+  } else if (engagementRoll <= 44) {
+    ids.push('share', 'send_post')
   }
 
   if (ids[ids.length - 1] !== 'scroll_down') {
     ids.push('scroll_down')
   }
 
+  if (index > MIN_PAGE_INDEX && rollPercent(index, 'scroll-up', generation) < 5) {
+    ids.push('scroll_up')
+  }
+
   return ids
 }
 
-export function generateInstructions(index, generation = 0, zenMode = false) {
+function buildRevisitInstructionIdSequence() {
+  return ['watch', 'scroll_down']
+}
+
+export function generateInstructions(index, generation = 0, zenMode = false, revisit = false) {
   const scalar = zenMode ? 1 : timeScalarForIndex(index)
 
   const buildInstruction = (instructionType, salt, timeBounds) => {
@@ -128,7 +182,7 @@ export function generateInstructions(index, generation = 0, zenMode = false) {
 
     return {
       type: instructionType,
-      timeMs: instructionType.comments_overlay
+      timeMs: instructionType.comments_overlay || instructionType.share_overlay
         ? rollInstructionTimeMs(index, timeBounds, salt, generation)
         : rollInstructionTimeMs(index, timeBounds, salt, generation) * scalar,
       timeLimit: baseTimeLimit != null && holdDurationMs != null
@@ -138,15 +192,26 @@ export function generateInstructions(index, generation = 0, zenMode = false) {
     }
   }
 
+  const attachInstructionParams = (instruction, id) => {
+    if (id === 'send_post') {
+      instruction.shareComponentIndex = rollInt(index, 'send-post-target', generation) % 5
+    }
+    return instruction
+  }
+
   if (DEBUG_INSTRUCTIONS.length > 0) {
     return DEBUG_INSTRUCTIONS.map((id) => {
       const instructionType = instructionTypeById[id]
-      return buildInstruction(instructionType, id, instructionType.time_bounds)
+      return attachInstructionParams(buildInstruction(instructionType, id, instructionType.time_bounds), id)
     })
   }
 
-  return buildInstructionIdSequence(index, generation).map((id) => {
+  const ids = revisit
+    ? buildRevisitInstructionIdSequence()
+    : buildInstructionIdSequence(index, generation)
+
+  return ids.map((id) => {
     const instructionType = instructionTypeById[id]
-    return buildInstruction(instructionType, id, instructionType.time_bounds)
+    return attachInstructionParams(buildInstruction(instructionType, id, instructionType.time_bounds), id)
   })
 }

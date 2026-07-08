@@ -5,6 +5,7 @@ export default function Instructions({ instructions, active, pageIndex }) {
     <div className="instructions-layer">
       {instructions.map((instruction, instructionIndex) => {
         if (instruction.type.comments_overlay) return null
+        if (instruction.type.share_overlay) return null
 
         return (
           <Instruction

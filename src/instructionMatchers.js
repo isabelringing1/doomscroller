@@ -26,4 +26,7 @@ export const instructionMatchers = {
 
   save: (action) =>
     action.type === 'button' && action.name === 'save',
+
+  send_post: (action, instruction) =>
+    action.type === 'send_post' && action.index === instruction.shareComponentIndex,
 }

@@ -57,6 +57,7 @@ export function setupInstructionJudge({
   clearInstructionFeedback,
   damageHealth,
   setIndex,
+  closeShare,
 }) {
   function completeInstruction(api, instructionIndex) {
     api.dispatch(instructionSucceeded({ instructionIndex }))
@@ -251,8 +252,11 @@ export function setupInstructionJudge({
         })
 
         if (match) {
-          const { i } = match
+          const { i, instruction } = match
           completeInstruction(api, i)
+          if (instruction.type.id === 'send_post') {
+            api.dispatch(closeShare())
+          }
           return
         }
 

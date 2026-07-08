@@ -25,6 +25,7 @@ export default function Instruction({
   const session = useSelector((s) => s.game.instructionSession)
   const commentsOpen = useSelector((s) => s.game.commentsOpen)
   const commentsScrolling = useSelector((s) => s.game.commentsScrolling)
+  const shareOpen = useSelector((s) => s.game.shareOpen)
   const zenMode = useSelector((s) => s.game.zenMode)
   const scrollDirection = useSelector((s) => s.feed.scrollDirection)
   const [timerReady, setTimerReady] = useState(false)
@@ -34,6 +35,7 @@ export default function Instruction({
   const [exiting, setExiting] = useState(false)
   const [speedUpPressed, setSpeedUpPressed] = useState(false)
   const [commentsWasOpened, setCommentsWasOpened] = useState(false)
+  const [shareWasOpened, setShareWasOpened] = useState(false)
   const [thinkDisplayText, setThinkDisplayText] = useState(null)
 
   const sessionMatchesPage = session?.pageIndex === pageIndex
@@ -43,13 +45,15 @@ export default function Instruction({
   const feedback = instructionState?.feedback ?? null
   const isCompleted = instructionState?.status === 'completed'
   const blocked = sessionMatchesPage && isInstructionBlocked(session, instructionIndex)
-  const overlayGated = type.comments_overlay && !commentsOpen
+  const overlayGated = (type.comments_overlay && !commentsOpen) || (type.share_overlay && !shareOpen)
   const commentsHandled = type.id === 'comments'
     && (commentsWasOpened || isCompleted || feedback === 'success')
+  const shareHandled = type.id === 'share'
+    && (shareWasOpened || isCompleted || feedback === 'success')
   const solidUntilNext = usesSolidUntilNextFade(type.id)
-  const timerVisible = sessionMatchesPage && timerReady && !blocked && !overlayGated && !commentsHandled
+  const timerVisible = sessionMatchesPage && timerReady && !blocked && !overlayGated && !commentsHandled && !shareHandled
     && (!isCompleted || solidUntilNext)
-  const displayed = sessionMatchesPage && (timerVisible || exiting) && !commentsHandled
+  const displayed = sessionMatchesPage && (timerVisible || exiting) && !commentsHandled && !shareHandled
   const visible = timerVisible
 
   const isActiveScrollInstruction =
@@ -73,16 +77,24 @@ export default function Instruction({
   }, [type.id, commentsOpen])
 
   useEffect(() => {
+    if (type.id === 'share' && shareOpen) {
+      setShareWasOpened(true)
+    }
+  }, [type.id, shareOpen])
+
+  useEffect(() => {
     if (!active) {
       setTimerReady(false)
       setSpeedUpPressed(false)
       setCommentsWasOpened(false)
+      setShareWasOpened(false)
       dispatch(setSpeedUpHeld(false))
       return
     }
     setTimerReady(false)
     setSpeedUpPressed(false)
     setCommentsWasOpened(false)
+    setShareWasOpened(false)
     setThinkDisplayText(null)
     dispatch(setSpeedUpHeld(false))
     setRunId((id) => id + 1)
@@ -92,10 +104,11 @@ export default function Instruction({
     if (!active) return
     if (isCompleted) return
     if (type.comments_overlay && !commentsOpen) return
-    if (type.comments_overlay && blocked) return
+    if (type.share_overlay && !shareOpen) return
+    if ((type.comments_overlay || type.share_overlay) && blocked) return
     const timer = setTimeout(() => setTimerReady(true), timeMs)
     return () => clearTimeout(timer)
-  }, [active, runId, timeMs, type.comments_overlay, commentsOpen, blocked, isCompleted])
+  }, [active, runId, timeMs, type.comments_overlay, type.share_overlay, commentsOpen, shareOpen, blocked, isCompleted])
 
   useEffect(() => {
     if (!active || !visible) return
@@ -256,7 +269,7 @@ export default function Instruction({
 
   return (
     <div
-      className={`instruction instruction--anchor-${align} instruction-${type.id}${type.comments_overlay ? ' instruction--comments-overlay' : ''}`}
+      className={`instruction instruction--anchor-${align} instruction-${type.id}${type.comments_overlay ? ' instruction--comments-overlay' : ''}${type.share_overlay ? ' instruction--share-overlay' : ''}`}
       style={{ left: `${position.vw}vw`, bottom: `${position.dvh}dvh` }}
     >
       <span

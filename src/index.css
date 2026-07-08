@@ -206,7 +206,7 @@ button{
 .page-actions {
   position: absolute;
   right: 1dvh;
-  bottom: calc(var(--page-bottom) + 10dvh);
+  bottom: calc(var(--page-bottom) + 12dvh);
   display: flex;
   flex-direction: column;
   gap: 4dvh;
@@ -246,6 +246,16 @@ button{
 .page-actions .page-action--saved svg {
   fill: #face15;
   stroke: #face15;
+}
+
+.page-actions .page-action--highlight {
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 236, 120, 1) 0%,
+    rgba(255, 237, 120, 0.25) 35%,
+    transparent 75%
+  );
+  border-radius: 50%;
 }
 
 .page-duration {
@@ -324,6 +334,8 @@ button{
 
 .instruction {
   position: absolute;
+  color: #fff;
+
 }
 
 .instruction-scroll_down {
@@ -336,6 +348,10 @@ button{
 
 .instruction-scroll_comments .instruction-text {
   color: #000;
+}
+
+.instruction-send_post {
+  color: #000 !important;
 }
 
 .instruction--anchor-center {
@@ -352,7 +368,6 @@ button{
 
 .instruction-text {
   display: block;
-  color: #fff;
   font-size: 7vw;
   font-weight: 400;
   white-space: nowrap;
@@ -666,4 +681,191 @@ button{
   align-items: center;
   gap: 10px;
   color: #666;
+}
+
+.share-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.share-instructions-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.instruction--share-overlay .instruction-text--success {
+  color: var(--color-success);
+}
+
+.share-dismiss-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60dvh;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: normal;
+  border-radius: 0;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.share-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 40dvh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  color: #000;
+  border-radius: 12px 12px 0 0;
+  transform: translateY(100%);
+  pointer-events: auto;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.share-panel-header {
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.share-search-icon {
+  position: absolute;
+  left: 16px;
+  color: #000;
+}
+
+.share-title {
+  width: 72px;
+  height: 16px;
+  border-radius: 4px;
+  background: #d3d3d3;
+}
+
+.share-close {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #000;
+  font: inherit;
+  letter-spacing: normal;
+  cursor: pointer;
+}
+
+.share-close:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.share-rows {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.share-row {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+}
+
+.share-row--bordered {
+  border-top: 1px solid #eee;
+}
+
+.share-row-scroll {
+  display: flex;
+  gap: 16px;
+  padding: 8px 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.share-row-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.share-component {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 64px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: normal;
+  cursor: pointer;
+}
+
+.share-component:disabled {
+  cursor: default;
+  pointer-events: none;
+}
+
+.share-component:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.share-component-icon {
+  width: 5.4dvh;
+  height: 5.4dvh;
+  border-radius: 50%;
+  background: #ccc;
+}
+
+.share-component-icon--highlight {
+  width: 7dvh;
+  height: 7dvh;
+  margin-top: -0.8dvh;
+  z-index: -1;
+  position: absolute;
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(255, 236, 120, 1) 0%,
+      rgba(255, 236, 120, 0.9) 45%,
+      transparent 75%
+    ),
+    #ffffff00;
+}
+
+.share-component-label {
+  width: 48px;
+  height: 10px;
+  border-radius: 4px;
+  background: #d3d3d3;
 }

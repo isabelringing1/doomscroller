@@ -45,12 +45,14 @@ const gameSlice = createSlice({
     commentsOpen: false,
     commentsTopBlueText: null,
     commentsScrolling: false,
+    shareOpen: false,
   },
   reducers: {
     playerAction: () => {},
     setSpeedUpHeld: (s, { payload }) => { s.speedUpHeld = payload },
     setCommentsScrolling: (s, { payload }) => { s.commentsScrolling = payload },
     openComments: (s, { payload }) => {
+      s.shareOpen = false
       s.commentsOpen = true
       const topBlueText = typeof payload === 'string' ? payload : payload?.topBlueText
       if (topBlueText !== undefined) {
@@ -60,6 +62,14 @@ const gameSlice = createSlice({
     closeComments: (s) => {
       s.commentsOpen = false
       s.commentsScrolling = false
+    },
+    openShare: (s) => {
+      s.commentsOpen = false
+      s.commentsScrolling = false
+      s.shareOpen = true
+    },
+    closeShare: (s) => {
+      s.shareOpen = false
     },
     startGame: (s, { payload }) => {
       s.gameStarted = true
@@ -147,6 +157,7 @@ const gameSlice = createSlice({
       s.commentsOpen = false
       s.commentsTopBlueText = null
       s.commentsScrolling = false
+      s.shareOpen = false
     },
   },
 })
@@ -158,6 +169,8 @@ export const {
   setCommentsScrolling,
   openComments,
   closeComments,
+  openShare,
+  closeShare,
   startGame,
   beginGameplay,
   startOver,
@@ -180,6 +193,7 @@ setupInstructionJudge({
   clearInstructionFeedback,
   damageHealth,
   setIndex,
+  closeShare,
 })
 
 export const store = configureStore({
