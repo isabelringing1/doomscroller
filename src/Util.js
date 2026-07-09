@@ -101,8 +101,19 @@ export function formatGameDuration(ms) {
   return `${seconds} ${secondLabel}`
 }
 
-export function generateCaption() {
-  const entry = pickRandom(captions)
+function captionMatchesLevel(bounds, level) {
+  const [min, max] = bounds
+  if (level < min) return false
+  if (max === -1) return true
+  return level <= max
+}
+
+export function generateCaption(level = 1) {
+  const pool = [
+    ...captions.filter((caption) => !caption.level_bounds),
+    ...captions.filter((caption) => caption.level_bounds && captionMatchesLevel(caption.level_bounds, level)),
+  ]
+  const entry = pickRandom(pool.length > 0 ? pool : captions)
 
   const phrase = entry.phrase.replace(/\{(\d+)\}/g, (match, indexStr) => {
     const options = entry.phrase_data[Number(indexStr)]
@@ -125,7 +136,7 @@ function buildInstructionIdSequence(index, generation) {
   if (rollPercent(index, 'scroll-down-early', generation) < 30) {
     ids.push('scroll_down')
     if (index > MIN_PAGE_INDEX && rollPercent(index, 'scroll-up', generation) < 5) {
-      ids.push('scroll_up')
+      //ids.push('scroll_up')
     }
     return ids
   }
@@ -168,7 +179,7 @@ function buildInstructionIdSequence(index, generation) {
   }
 
   if (index > MIN_PAGE_INDEX && rollPercent(index, 'scroll-up', generation) < 5) {
-    ids.push('scroll_up')
+    //ids.push('scroll_up')
   }
 
   return ids

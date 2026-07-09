@@ -1,7 +1,7 @@
-import { configureStore, createSlice } from '@reduxjs/toolkit'
+import { configureStore, createSlice, createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit'
 import { instructionListener, setupInstructionJudge } from './instructionJudge.js'
 import { isInstructionBlocked } from './Util.js'
-import { MIN_PAGE_INDEX } from './pageMeta.js'
+import { MIN_PAGE_INDEX, speedUpTierForIndex } from './pageMeta.js'
 
 const clampPageIndex = (index) => Math.max(MIN_PAGE_INDEX, index)
 
@@ -30,11 +30,14 @@ function allJudgeableCompleted(session) {
   )
 }
 
+const levelListener = createListenerMiddleware()
+
 const gameSlice = createSlice({
   name: 'game',
   initialState: {
     score: 0,
     health: 1,
+    level: 1,
     gameStarted: false,
     zenMode: false,
     gameStartedAt: null,
@@ -118,7 +121,7 @@ const gameSlice = createSlice({
       if (!session || session.status !== 'pending') return
       const state = session.states[instructionIndex]
       if (!state || state.status !== 'pending') return
-      s.score += 1
+      s.score += 10
       state.feedback = 'success'
     },
     instructionFailed: (s, { payload: { instructionIndices } }) => {
@@ -144,9 +147,11 @@ const gameSlice = createSlice({
         session.status = 'completed'
       }
     },
+    setLevel: (s, { payload }) => { s.level = payload },
     startOver: (s) => {
       s.score = 0
       s.health = 1
+      s.level = 1
       s.gameStarted = false
       s.zenMode = false
       s.gameStartedAt = null
@@ -173,6 +178,7 @@ export const {
   closeShare,
   startGame,
   beginGameplay,
+  setLevel,
   startOver,
   damageHealth,
   togglePageEngagement,
@@ -183,6 +189,24 @@ export const {
   clearInstructionFeedback,
   instructionCompleted,
 } = gameSlice.actions
+
+levelListener.startListening({
+  matcher: isAnyOf(next, setIndex),
+  effect: (_action, listenerApi) => {
+    const { zenMode, level } = listenerApi.getState().game
+    const { titleDismissed } = listenerApi.getState().feed
+    if (zenMode || !titleDismissed) return
+
+    const prevIndex = listenerApi.getOriginalState().feed.currentIndex
+    const newIndex = listenerApi.getState().feed.currentIndex
+    const newTier = speedUpTierForIndex(newIndex)
+    const prevTier = speedUpTierForIndex(prevIndex)
+
+    if (newTier > prevTier && newTier + 1 > level) {
+      listenerApi.dispatch(setLevel(newTier + 1))
+    }
+  },
+})
 
 setupInstructionJudge({
   playerAction,
@@ -202,5 +226,5 @@ export const store = configureStore({
     game: gameSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().prepend(instructionListener.middleware),
+    getDefaultMiddleware().prepend(instructionListener.middleware, levelListener.middleware),
 })

@@ -14,8 +14,9 @@ export default function PageMenu({ index, active }) {
   const commentsOpen = useSelector((s) => s.game.commentsOpen)
   const shareOpen = useSelector((s) => s.game.shareOpen)
   const feedGeneration = useSelector((s) => s.feed.feedGeneration)
+  const level = useSelector((s) => s.game.level)
   const name = `@user_${index}`
-  const caption = useMemo(() => generateCaption(), [index, feedGeneration])
+  const caption = useMemo(() => generateCaption(level), [index, feedGeneration, level])
 
   const onButton = (name) => {
     if (!active) return
