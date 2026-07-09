@@ -8,7 +8,11 @@ const EXIT_FADE_MS = 200
 const DEFAULT_FADE_OUT_MS = 2000
 
 function usesSolidUntilNextFade(typeId) {
-  return typeId === 'watch' || typeId === 'think'
+  return typeId === 'watch' || typeId === 'think' || typeId === 'think_2'
+}
+
+function usesThinkDisplayTexts(typeId) {
+  return typeId === 'think' || typeId === 'think_2'
 }
 
 export default function Instruction({
@@ -115,7 +119,7 @@ export default function Instruction({
   }, [active, visible, pageIndex, instructionIndex, dispatch])
 
   useEffect(() => {
-    if (!visible || type.id !== 'think' || thinkDisplayText) return
+    if (!visible || !usesThinkDisplayTexts(type.id) || thinkDisplayText) return
     const texts = type.display_texts
     if (!texts?.length) return
     setThinkDisplayText(texts[Math.floor(Math.random() * texts.length)])
@@ -178,9 +182,9 @@ export default function Instruction({
   }, [visible, runId, exiting])
 
   if (!active || !displayed) return null
-  if (type.id === 'think' && !thinkDisplayText) return null
+  if (usesThinkDisplayTexts(type.id) && !thinkDisplayText) return null
 
-  const displayText = type.id === 'think' ? thinkDisplayText : type.display_text
+  const displayText = usesThinkDisplayTexts(type.id) ? thinkDisplayText : type.display_text
 
   const isSpeedUpHolding = type.id === 'speed_up' && speedUpPressed && !feedback && !isCompleted
   const isSuccess =

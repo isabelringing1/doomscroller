@@ -2,7 +2,7 @@ import instructionTypes from './Instructions.json'
 import captions from './captions.json'
 import { MIN_PAGE_INDEX, rollInstructionDuration, rollInstructionTimeMs, rollInt, rollPercent, timeScalarForIndex } from './pageMeta.js'
 
-export const DEBUG_INSTRUCTIONS =  ['watch', 'share', 'send_post', 'scroll_down']
+export const DEBUG_INSTRUCTIONS = []// ['watch', 'think', 'speed_up', 'think_2', "speed_up", "scroll_down"]
 
 export function isMobileDevice() {
   return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
@@ -143,11 +143,18 @@ function buildInstructionIdSequence(index, generation) {
     ids.push('comments')
   }
 
+  if (rollPercent(index, 'think-2', generation) < 30) {
+    ids.push('think_2')
+    if (rollPercent(index, 'think-2-speed-up', generation) < 50 && !ids.includes('speed_up')) {
+      ids.push('speed_up')
+    }
+  }
+
   if (ids[ids.length - 1] === 'comments') {
     ids.push('scroll_comments', 'close_comments')
   }
 
-  const engagementRoll = rollInt(index, 'like-or-save', generation)
+  const engagementRoll = rollInt(index, 'engagement', generation)
   if (engagementRoll <= 28) {
     ids.push('like')
   } else if (engagementRoll <= 36) {
@@ -195,6 +202,9 @@ export function generateInstructions(index, generation = 0, zenMode = false, rev
   const attachInstructionParams = (instruction, id) => {
     if (id === 'send_post') {
       instruction.shareComponentIndex = rollInt(index, 'send-post-target', generation) % 5
+    }
+    if (id === 'watch' && index === MIN_PAGE_INDEX && !zenMode) {
+      instruction.type = { ...instruction.type, display_text: 'Follow Instructions!' }
     }
     return instruction
   }
