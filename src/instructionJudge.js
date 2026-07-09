@@ -90,7 +90,6 @@ export function setupInstructionJudge({
     effect: async (action, api) => {
       const { pageIndex, instructionIndex } = action.payload
       const { zenMode, instructionSession: session } = api.getState().game
-      if (zenMode) return
       if (!session || session.pageIndex !== pageIndex) return
 
       const instruction = session.instructions[instructionIndex]
@@ -115,6 +114,8 @@ export function setupInstructionJudge({
         }
         return
       }
+
+      if (zenMode) return
 
       if (!timeLimit) return
 

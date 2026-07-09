@@ -99,6 +99,7 @@ export default function SharePanel({ isOpen, onClose }) {
             </div>
           ))}
         </div>
+        <div className="share-panel-footer"></div>
       </div>
     </div>
   )

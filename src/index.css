@@ -746,7 +746,7 @@ button{
   left: 0;
   right: 0;
   bottom: 0;
-  height: 40dvh;
+  height: 45dvh;
   display: flex;
   flex-direction: column;
   background: #fff;
@@ -767,6 +767,10 @@ button{
   min-height: 44px;
   padding: 8px 16px;
   border-bottom: 1px solid #eee;
+}
+
+.share-panel-footer{
+  height: 5dvh;
 }
 
 .share-search-icon {
