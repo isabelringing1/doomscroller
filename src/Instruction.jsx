@@ -4,8 +4,7 @@ import { anchorAlign, isInstructionBlocked } from './Util.js'
 import { instructionVisible, playerAction, setSpeedUpHeld } from './store.js'
 
 const FADE_MS = 400
-const SPEED_UP_COMPLETE_MS = 100
-const SOLID_EXIT_MS = 200
+const EXIT_FADE_MS = 200
 const DEFAULT_FADE_OUT_MS = 2000
 
 function usesSolidUntilNextFade(typeId) {
@@ -128,29 +127,25 @@ export default function Instruction({
       setExiting(false)
       return
     }
-    setFadeOutActive(false)
+    setFadeOutActive(true)
     setExiting(true)
     dispatch(setSpeedUpHeld(false))
-    if (type.id !== 'speed_up') {
-      setShown(false)
-    }
-    const exitMs = type.id === 'speed_up' ? SPEED_UP_COMPLETE_MS : FADE_MS
     const timer = setTimeout(() => {
+      setFadeOutActive(false)
       setTimerReady(false)
+      setShown(false)
       setExiting(false)
-      if (type.id === 'speed_up') {
-        setShown(false)
-      }
-    }, exitMs)
+    }, EXIT_FADE_MS)
     return () => clearTimeout(timer)
-  }, [isCompleted, type.unjudgeable, type.id, dispatch])
+  }, [isCompleted, type.unjudgeable, dispatch])
 
   useEffect(() => {
     if (solidUntilNext) return
-    if (!shown || isCompleted || exiting) {
+    if (!shown || exiting) {
       setFadeOutActive(false)
       return
     }
+    if (isCompleted) return
     const timer = setTimeout(() => setFadeOutActive(true), FADE_MS)
     return () => clearTimeout(timer)
   }, [solidUntilNext, shown, isCompleted, exiting, runId])
@@ -167,7 +162,7 @@ export default function Instruction({
       setTimerReady(false)
       setShown(false)
       setExiting(false)
-    }, SOLID_EXIT_MS)
+    }, EXIT_FADE_MS)
     return () => clearTimeout(timer)
   }, [solidUntilNext, active, shown, exiting, nextInstructionVisible])
 
@@ -193,15 +188,15 @@ export default function Instruction({
     || isSpeedUpHolding
     || (scrollDirectionMatches && isActiveScrollInstruction)
     || (commentsScrolling && isActiveScrollCommentsInstruction)
-  const fadeOutDurationMs = solidUntilNext ? SOLID_EXIT_MS : (timeLimit ?? DEFAULT_FADE_OUT_MS)
-  const showFadeOut = solidUntilNext
-    ? exiting && fadeOutActive
-    : !zenMode
-      && fadeOutActive
-      && !isSuccess
-      && feedback !== 'failure'
-      && !isCompleted
-      && !exiting
+  const timerDurationMs = timeLimit ?? DEFAULT_FADE_OUT_MS
+  const showExitFade = exiting && fadeOutActive
+  const showTimer = !solidUntilNext
+    && !zenMode
+    && fadeOutActive
+    && !isSuccess
+    && feedback !== 'failure'
+    && !isCompleted
+    && !exiting
 
   const feedbackClass =
     isSuccess
@@ -257,8 +252,12 @@ export default function Instruction({
           style={{ left: `${position.vw}vw`, bottom: `${position.dvh}dvh` }}
         >
           <span
-            className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${exiting ? ' instruction-text--speed-up-exit' : ''}${showFadeOut ? ' instruction-text--fade-out' : ''}`}
-            style={showFadeOut ? { animationDuration: `${fadeOutDurationMs}ms` } : undefined}
+            className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${showTimer ? ' instruction-text--timer' : ''}${showExitFade ? ' instruction-text--fade-out' : ''}`}
+            style={showTimer
+              ? { animationDuration: `${timerDurationMs}ms` }
+              : showExitFade
+                ? { animationDuration: `${EXIT_FADE_MS}ms` }
+                : undefined}
           >
             {displayText}
           </span>
@@ -273,8 +272,12 @@ export default function Instruction({
       style={{ left: `${position.vw}vw`, bottom: `${position.dvh}dvh` }}
     >
       <span
-        className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${showFadeOut ? ' instruction-text--fade-out' : ''}`}
-        style={showFadeOut ? { animationDuration: `${fadeOutDurationMs}ms` } : undefined}
+        className={`instruction-text${feedbackClass}${shown ? ' instruction-text--shown' : ''}${showTimer ? ' instruction-text--timer' : ''}${showExitFade ? ' instruction-text--fade-out' : ''}`}
+        style={showTimer
+          ? { animationDuration: `${timerDurationMs}ms` }
+          : showExitFade
+            ? { animationDuration: `${EXIT_FADE_MS}ms` }
+            : undefined}
       >
         {displayText}
       </span>

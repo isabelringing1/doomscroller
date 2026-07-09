@@ -11,6 +11,8 @@ html, body, #root {
   --browser-ui-bottom: 0px;
   --page-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--browser-ui-bottom));
   --color-success: #22c55e;
+  --instruction-timer-base: #fff;
+  --instruction-timer-fill: #5ac7e2;
 }
 
 button{ 
@@ -313,12 +315,7 @@ button{
 
 .speed-up-gradient--exiting {
   opacity: 0;
-  transition: opacity 0.1s ease;
-}
-
-.instruction-text--speed-up-exit {
-  opacity: 0;
-  transition: opacity 0.1s ease;
+  transition: opacity 0.2s ease;
 }
 
 .instruction--speed-up {
@@ -347,10 +344,12 @@ button{
 }
 
 .instruction-scroll_comments .instruction-text {
+  --instruction-timer-base: #000;
   color: #000;
 }
 
 .instruction-send_post {
+  --instruction-timer-base: #000;
   color: #000 !important;
 }
 
@@ -385,10 +384,33 @@ button{
   transition: opacity 0.4s ease-in-out, visibility 0s;
 }
 
+.instruction-text--shown.instruction-text--timer {
+  opacity: 1;
+  color: transparent;
+  background-image: linear-gradient(
+    to right,
+    var(--instruction-timer-fill) 0%,
+    var(--instruction-timer-fill) 50%,
+    var(--instruction-timer-base) 50%,
+    var(--instruction-timer-base) 100%
+  );
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: visibility 0s;
+  animation: instruction-timer-fill linear forwards;
+}
+
 .instruction-text--shown.instruction-text--fade-out {
   opacity: 1;
   transition: visibility 0s, color 0.15s ease;
   animation: instruction-fade-out ease-in forwards;
+}
+
+@keyframes instruction-timer-fill {
+  from { background-position: 100% 0; }
+  to { background-position: 0% 0; }
 }
 
 @keyframes instruction-fade-out {
