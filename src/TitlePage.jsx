@@ -1,11 +1,13 @@
 import { useDispatch } from 'react-redux'
 import { startGame } from './store.js'
 import { getHighScore } from './highScore.js'
+import { isZenModeUnlocked } from './zenModeUnlock.js'
 import { isMobileDevice } from './Util.js'
 
 export default function TitlePage() {
   const dispatch = useDispatch()
   const highScore = getHighScore()
+  const zenModeUnlocked = isZenModeUnlocked()
 
   if (!isMobileDevice()) {
     return (
@@ -27,9 +29,11 @@ export default function TitlePage() {
           Start Game
         </button>
         {highScore > 0 && <p className="title-page-high-score">High Score: {highScore}</p>}
-        <button type="button" className="zen-mode-button title-page-start" onClick={() => dispatch(startGame({ zenMode: true }))}>
-          Zen Mode
-        </button>
+        {zenModeUnlocked && (
+          <button type="button" className="zen-mode-button title-page-start" onClick={() => dispatch(startGame({ zenMode: true }))}>
+            Zen Mode
+          </button>
+        )}
       </div>
 
       

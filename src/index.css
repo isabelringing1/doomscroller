@@ -450,7 +450,7 @@ button{
   align-items: center;
   justify-content: center;
   gap: 1.5dvh;
-  padding: 6dvh;
+  padding: 6dvh 3dvh;
   box-sizing: border-box;
   background: #e3e3e3;
   border-radius: 16px;
@@ -481,6 +481,13 @@ button{
   font-size: 5vw;
   font-weight: 500;
   color: var(--color-success);
+}
+
+.game-over-zen-unlocked {
+  margin: 1dvh 0 0;
+  font-size: 5vw;
+  font-weight: 500;
+  color: #61bbff;
 }
 
 .game-over-start-over {
