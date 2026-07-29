@@ -125,6 +125,7 @@ button{
   top: 21.15dvh;
   height: 2.4dvh;
   background: #ffc35d;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25));
 }
 
 .title-page-bottom-bar {
@@ -204,9 +205,11 @@ button{
   margin: 1dvh 0 0;
   font-size: 5vw;
   font-weight: 400;
-  line-height: 1.1;
+  line-height: 1.15;
   text-align: center;
   text-transform: uppercase;
+  color: #e8ad48;
+  letter-spacing: 0.07em;
 }
 
 .title-page-directions {
@@ -232,25 +235,81 @@ button{
 }
 
 .title-page-start {
+  position: relative;
   width: 20dvh;
-  height:7dvh;
+  height: 8dvh;
   margin-top: 4.35dvh;
-  padding: 0;
-  border: 0;
-  border-radius: 1dvh;
-  box-shadow: 0 0.55dvh 0 #a6445b;
-  background: #db899d;
+  border-radius: 3dvh;
   color: #000;
   font-family: 'Marlboro', Impact, serif;
   font-size: 4.55dvh;
   font-weight: 400;
   letter-spacing: 0;
-  line-height: 1.7;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.title-page-start:active {
-  transform: translateY(0.35dvh);
-  box-shadow: 0 0.2dvh 0 #a6445b;
+.title-page-start.peel-ready {
+  opacity: 1;
+}
+
+.title-page-start .peel-layer {
+  color: #000000b5;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+  box-sizing: border-box;
+  transform-origin: top left;
+  user-select: none;
+}
+
+.title-page-start-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ff466e;
+}
+
+.title-page-start-back {
+  background: #db899d;
+}
+
+.title-page-start-bottom {
+  background: #fff;
+}
+
+.peel-svg-clip-element {
+  position: absolute;
+  top: -10000px;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.title-page-start-hit-area {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: transparent;
+  touch-action: manipulation;
+}
+
+.title-page-start-hit-area:focus-visible {
+  outline: 0.35dvh solid #171717b9;
+  outline-offset: 0.35dvh;
 }
 
 .page {
