@@ -1,11 +1,15 @@
-import { useDispatch } from 'react-redux'
-import { startGame } from './store.js'
 import { getHighScore } from './highScore.js'
 import { isZenModeUnlocked } from './zenModeUnlock.js'
 import { isMobileDevice } from './Util.js'
 
+const AUTOSTART_KEY = 'doomscroller-autostart'
+
+function startWithReload(zenMode) {
+  sessionStorage.setItem(AUTOSTART_KEY, zenMode ? 'zen' : 'normal')
+  window.location.reload()
+}
+
 export default function TitlePage() {
-  const dispatch = useDispatch()
   const highScore = getHighScore()
   const zenModeUnlocked = isZenModeUnlocked()
 
@@ -25,12 +29,12 @@ export default function TitlePage() {
       <div className="title-page-subheading">An immersive simulation of consuming content.</div>
       
       <div className="title-page-buttons">
-        <button type="button" className="title-page-start" onClick={() => dispatch(startGame({ zenMode: false }))}>
+        <button type="button" className="title-page-start" onClick={() => startWithReload(false)}>
           Start Game
         </button>
         {highScore > 0 && <p className="title-page-high-score">High Score: {highScore}</p>}
         {zenModeUnlocked && (
-          <button type="button" className="zen-mode-button title-page-start" onClick={() => dispatch(startGame({ zenMode: true }))}>
+          <button type="button" className="zen-mode-button title-page-start" onClick={() => startWithReload(true)}>
             Zen Mode
           </button>
         )}

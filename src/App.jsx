@@ -7,7 +7,7 @@ import GameOver from './GameOver.jsx'
 import TitlePage from './TitlePage.jsx'
 import CommentsPanel from './CommentsPanel.jsx'
 import SharePanel from './SharePanel.jsx'
-import { dismissTitle, beginGameplay, setIndex, setScrollDirection, playerAction, closeComments, closeShare, store } from './store.js'
+import { dismissTitle, beginGameplay, setIndex, setScrollDirection, playerAction, closeComments, closeShare, startGame, store } from './store.js'
 import { isSpeedUpHolding } from './instructionJudge.js'
 import { MIN_PAGE_INDEX } from './pageMeta.js'
 
@@ -30,6 +30,13 @@ export default function App() {
   const ignoreScrollRef = useRef(false)
   const lastScrollTopRef = useRef(null)
   const scrollJudgedRef = useRef(false)
+
+  useEffect(() => {
+    const autostart = sessionStorage.getItem('doomscroller-autostart')
+    if (!autostart) return
+    sessionStorage.removeItem('doomscroller-autostart')
+    dispatch(startGame({ zenMode: autostart === 'zen' }))
+  }, [dispatch])
 
   function hadActiveJudgeable(session) {
     return session?.states?.some(

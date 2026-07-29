@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { anchorAlign, isInstructionBlocked } from './Util.js'
+import { anchorAlign, INSTRUCTION_FADE_MS, isInstructionBlocked } from './Util.js'
 import { instructionVisible, playerAction, setSpeedUpHeld } from './store.js'
 
-const FADE_MS = 400
+const FADE_MS = INSTRUCTION_FADE_MS
 const EXIT_FADE_MS = 200
 const DEFAULT_FADE_OUT_MS = 2000
 

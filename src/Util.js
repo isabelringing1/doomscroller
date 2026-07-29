@@ -2,7 +2,9 @@ import instructionTypes from './Instructions.json'
 import captions from './captions.json'
 import { MIN_PAGE_INDEX, rollInstructionDuration, rollInstructionTimeMs, rollInt, rollPercent, timeScalarForIndex } from './pageMeta.js'
 
-export const DEBUG_INSTRUCTIONS = []// ['watch', 'think', 'speed_up', 'think_2', "speed_up", "scroll_down"]
+export const INSTRUCTION_FADE_MS = 400
+
+export const DEBUG_INSTRUCTIONS = ['watch', 'comments', 'scroll_comments', 'close_comments', "scroll_down"]
 
 export function isMobileDevice() {
   return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)

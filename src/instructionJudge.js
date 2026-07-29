@@ -1,6 +1,6 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit'
 import { instructionMatchers } from './instructionMatchers.js'
-import { isScrollCommentsInstructionDone } from './Util.js'
+import { isScrollCommentsInstructionDone, INSTRUCTION_FADE_MS } from './Util.js'
 
 export const instructionListener = createListenerMiddleware()
 
@@ -119,6 +119,7 @@ export function setupInstructionJudge({
 
       if (!timeLimit) return
 
+      await api.delay(INSTRUCTION_FADE_MS)
       await api.delay(timeLimit)
 
       while (isSpeedUpHolding(pageIndex)) {
