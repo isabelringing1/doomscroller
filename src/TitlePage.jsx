@@ -1,5 +1,3 @@
-import { getHighScore } from './highScore.js'
-import { isZenModeUnlocked } from './zenModeUnlock.js'
 import { isMobileDevice } from './Util.js'
 
 const AUTOSTART_KEY = 'doomscroller-autostart'
@@ -10,9 +8,6 @@ function startWithReload(zenMode) {
 }
 
 export default function TitlePage() {
-  const highScore = getHighScore()
-  const zenModeUnlocked = isZenModeUnlocked()
-
   if (!isMobileDevice()) {
     return (
       <div className="title-page">
@@ -25,22 +20,29 @@ export default function TitlePage() {
 
   return (
     <div className="title-page">
-      <h1 className="title-page-heading">DoomScroller</h1>
-      <div className="title-page-subheading">An immersive simulation of consuming content.</div>
-      
-      <div className="title-page-buttons">
-        <button type="button" className="title-page-start" onClick={() => startWithReload(false)}>
-          Start Game
-        </button>
-        {highScore > 0 && <p className="title-page-high-score">High Score: {highScore}</p>}
-        {zenModeUnlocked && (
-          <button type="button" className="zen-mode-button title-page-start" onClick={() => startWithReload(true)}>
-            Zen Mode
-          </button>
-        )}
-      </div>
+      <div className="title-page-packaging" aria-hidden="true" />
+      <div className="title-page-gold-bar" aria-hidden="true" />
+      <div className="title-page-bottom-bar" aria-hidden="true" />
+      <div className="title-page-original">Original</div>
 
-      
+      <main className="title-page-content">
+        <h1 className="title-page-heading">Phone<span style={{ fontSize: '3.9dvh' }}> </span>Cigarette</h1>
+        <p className="title-page-subheading">
+          Immersive simulation
+          <br />
+          of consuming content
+        </p>
+
+        <div className="title-page-directions">
+          <strong>Directions:</strong>
+          <span>Use when craving the dopamine</span>
+          <span>hit of scrolling social media.</span>
+        </div>
+
+        <button type="button" className="title-page-start" onClick={() => startWithReload(true)}>
+          Start
+        </button>
+      </main>
     </div>
   )
 }

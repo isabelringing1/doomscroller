@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Marlboro';
+  src: url('/marlboro.regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 html, body, #root {
   margin: 0;
   height: 100%;
@@ -95,73 +103,154 @@ button{
 }
 
 .title-page {
+  position: relative;
   height: 100dvh;
   scroll-snap-align: start;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: max(2.5dvh, env(safe-area-inset-top, 0px));
+  overflow: hidden;
   box-sizing: border-box;
-  background: #ededed;
+  background: #fff;
   color: #000;
-  justify-content: center;
+  font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.title-page-gold-bar,
+.title-page-bottom-bar {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.title-page-gold-bar {
+  top: 21.15dvh;
+  height: 2.4dvh;
+  background: #ffc35d;
+}
+
+.title-page-bottom-bar {
+  top: 94.75dvh;
+  height: 1.7dvh;
+  background: #ff2454;
 }
 
 .title-page-desktop-message {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  width: 100%;
   margin: 0;
   max-width: 36rem;
   padding: 0 2rem;
+  box-sizing: border-box;
   font-size: 1.75rem;
   font-weight: 500;
   line-height: 1.5;
   text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.title-page-packaging {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 32.4dvh;
+  background: #ff2454;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 39%, 0 100%);
+}
+
+.title-page-original {
+  position: absolute;
+  z-index: 1;
+  top: 4dvh;
+  left: 50%;
+  width: min(20.6dvh, calc(100% - 8dvh));
+  height: 4.25dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+  border-radius: 3dvh;
+  background: #fff;
+  color: #ff2454;
+  font-size: 2.35dvh;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.title-page-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  padding-top: 34.9dvh;
 }
 
 .title-page-heading {
   margin: 0;
-  font-size: 8vw;
-  font-weight: 700;
-  padding-bottom: 1dvh;
+  font-family: 'Marlboro', Impact, serif;
+  font-size: 15vw;
+  font-weight: 400;
+  line-height: 1;
   text-align: center;
-  width: 90%;
+  white-space: nowrap;
 }
 
 .title-page-subheading {
-  margin: 0;
+  margin: 1dvh 0 0;
   font-size: 5vw;
   font-weight: 400;
-  padding-bottom: 5dvh;
+  line-height: 1.1;
   text-align: center;
-  width: 90%;
-  padding-bottom: 2dvh;
+  text-transform: uppercase;
 }
 
-.title-page-high-score {
-  margin: 0;
-  font-size: 5vw;
-  font-weight: 600;
-}
-
-.zen-mode-button {
-  background: #61bbff !important;
-  bottom: -10dvh;
-  position: relative;
-}
-
-.title-page-buttons {
+.title-page-directions {
   display: flex;
+  width: 80vw;
+  padding: 4vw 0;
+  margin-top: 7.9dvh;
+  border: 0.7vw solid #171717;
   flex-direction: column;
   align-items: center;
-  gap: 1.5dvh;
-  margin-top: 3dvh;
+  justify-content: center;
+  box-sizing: border-box;
+  font-size: 4.5vw;
+  line-height: 1.38;
+  text-align: center;
+}
+
+.title-page-directions strong {
+  margin-bottom: 0.25dvh;
+  font-size: 5vw;
+  font-style: italic;
+  line-height: 1.1;
 }
 
 .title-page-start {
-  padding: 12px 32px;
+  width: 20dvh;
+  height:7dvh;
+  margin-top: 4.35dvh;
+  padding: 0;
+  border: 0;
+  border-radius: 1dvh;
+  box-shadow: 0 0.55dvh 0 #a6445b;
+  background: #db899d;
+  color: #000;
+  font-family: 'Marlboro', Impact, serif;
+  font-size: 4.55dvh;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.7;
 }
 
 .title-page-start:active {
-  transform: scale(0.96);
+  transform: translateY(0.35dvh);
+  box-shadow: 0 0.2dvh 0 #a6445b;
 }
 
 .page {
@@ -280,6 +369,7 @@ button{
   inset: 0;
   z-index: 1;
   pointer-events: none;
+  font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 .speed-up-gradient {
