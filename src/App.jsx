@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Page from './Page.jsx'
 import Score from './Score.jsx'
 import SpeedUpNotice from './SpeedUpNotice.jsx'
+import GameTimer from './GameTimer.jsx'
 import GameOver from './GameOver.jsx'
 import TitlePage from './TitlePage.jsx'
 import CommentsPanel from './CommentsPanel.jsx'
@@ -229,6 +230,7 @@ export default function App() {
     <>
       {titleDismissed && !zenMode && <Score />}
       {titleDismissed && !zenMode && <SpeedUpNotice />}
+      {titleDismissed && health > 0 && <GameTimer />}
       {titleDismissed && health <= 0 && <GameOver />}
       {titleDismissed && (
         <CommentsPanel

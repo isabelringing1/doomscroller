@@ -96,6 +96,13 @@ const gameSlice = createSlice({
         s.gameDurationMs = Date.now() - s.gameStartedAt
       }
     },
+    endGame: (s) => {
+      if (s.health <= 0) return
+      s.health = 0
+      if (s.gameStartedAt != null && s.gameDurationMs == null) {
+        s.gameDurationMs = Date.now() - s.gameStartedAt
+      }
+    },
     instructionPageActive: (s, { payload: { pageIndex, instructions } }) => {
       s.instructionSession = {
         pageIndex,
@@ -181,6 +188,7 @@ export const {
   setLevel,
   startOver,
   damageHealth,
+  endGame,
   togglePageEngagement,
   instructionPageActive,
   instructionVisible,

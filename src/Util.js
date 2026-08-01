@@ -4,7 +4,7 @@ import { MIN_PAGE_INDEX, rollInstructionDuration, rollInstructionTimeMs, rollInt
 
 export const INSTRUCTION_FADE_MS = 400
 
-export const DEBUG_INSTRUCTIONS = ['watch', 'comments', 'scroll_comments', 'close_comments', "scroll_down"]
+export const DEBUG_INSTRUCTIONS = []//['watch', 'comments', 'scroll_comments', 'close_comments', "scroll_down"]
 
 export function isMobileDevice() {
   return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
@@ -135,7 +135,7 @@ export function generateCaption(level = 1) {
 function buildInstructionIdSequence(index, generation) {
   const ids = ['watch']
 
-  if (rollPercent(index, 'scroll-down-early', generation) < 30) {
+  if (rollPercent(index, 'scroll-down-early', generation) < 20) {
     ids.push('scroll_down')
     if (index > MIN_PAGE_INDEX && rollPercent(index, 'scroll-up', generation) < 5) {
       //ids.push('scroll_up')
