@@ -1,9 +1,9 @@
 {
-  "name": "doomscroller",
+  "name": "phone-cigarette",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://isabelringing1.github.io/doomscroller",
+  "homepage": "https://isabisabel.com/phone-cigarette",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
