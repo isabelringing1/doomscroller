@@ -4,6 +4,8 @@ import { isInstructionBlocked } from './Util.js'
 import { MIN_PAGE_INDEX, speedUpTierForIndex } from './pageMeta.js'
 
 const clampPageIndex = (index) => Math.max(MIN_PAGE_INDEX, index)
+const INSTRUCTION_PROGRESS_PERCENT = 2
+const NAVIGATION_SCROLL_INSTRUCTION_IDS = new Set(['scroll_down', 'scroll_up'])
 
 const feedSlice = createSlice({
   name: 'feed',
@@ -37,6 +39,7 @@ const gameSlice = createSlice({
   initialState: {
     score: 0,
     health: 1,
+    progress: 100,
     level: 1,
     gameStarted: false,
     zenMode: false,
@@ -108,7 +111,7 @@ const gameSlice = createSlice({
         pageIndex,
         instructions,
         status: 'pending',
-        states: instructions.map((instruction) => ({
+        states: instructions.map(() => ({
           status: 'pending',
           visible: false,
           feedback: null,
@@ -150,6 +153,20 @@ const gameSlice = createSlice({
       if (!state || state.status !== 'pending') return
       state.feedback = null
       state.status = 'completed'
+      const instructionId = session.instructions[instructionIndex].type.id
+      if (!NAVIGATION_SCROLL_INSTRUCTION_IDS.has(instructionId)) {
+        s.progress = Math.max(0, s.progress - INSTRUCTION_PROGRESS_PERCENT)
+      }
+      if (
+        s.progress === 0
+        && instructionId === 'scroll_down'
+        && s.health > 0
+      ) {
+        s.health = 0
+        if (s.gameStartedAt != null && s.gameDurationMs == null) {
+          s.gameDurationMs = Date.now() - s.gameStartedAt
+        }
+      }
       if (allJudgeableCompleted(session)) {
         session.status = 'completed'
       }
@@ -158,6 +175,7 @@ const gameSlice = createSlice({
     startOver: (s) => {
       s.score = 0
       s.health = 1
+      s.progress = 100
       s.level = 1
       s.gameStarted = false
       s.zenMode = false

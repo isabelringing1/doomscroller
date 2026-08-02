@@ -92,6 +92,18 @@ export function setupInstructionJudge({
       const { zenMode, instructionSession: session } = api.getState().game
       if (!session || session.pageIndex !== pageIndex) return
 
+      const previousIndex = instructionIndex - 1
+      const previousInstruction = session.instructions[previousIndex]
+      const previousState = session.states[previousIndex]
+      if (
+        previousInstruction?.type.id === 'watch'
+        && previousState?.status === 'pending'
+        && previousState.visible
+        && !previousState.feedback
+      ) {
+        api.dispatch(instructionCompleted({ instructionIndex: previousIndex }))
+      }
+
       const instruction = session.instructions[instructionIndex]
       const timeLimit = instruction.timeLimit
 
