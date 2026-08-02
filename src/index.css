@@ -86,9 +86,22 @@ button{
 
 .game-timer-red {
   bottom: 95.3%;
-  height: 4.7%;
+  height: 3.7%;
   border-radius: 4px 4px 0 0;
-  background: #ff4248;
+  background: #ff3b24;
+  box-shadow: 0 0 6px 2px rgba(255, 45, 20, 0.8);
+  animation: cigarette-ember-glow 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes cigarette-ember-glow {
+  from {
+    background: #ff4a2f;
+    box-shadow: 0 0 7px 0px rgba(255, 55, 25, 0.9);
+  }
+  to {
+    background: #7a0909;
+    box-shadow: 0 0 3px 0px rgba(130, 5, 5, 0.55);
+  }
 }
 
 .game-timer-white {

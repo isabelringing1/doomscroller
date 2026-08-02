@@ -127,7 +127,7 @@ export default function TitlePage() {
     return (
       <div className="title-page">
         <p className="title-page-desktop-message">
-          DoomScroller does not work on desktop! Please visit on a mobile device to play.
+          Phone Cigarette works on mobile phones only!
         </p>
       </div>
     )
