@@ -5,6 +5,7 @@ const ORANGE_HEIGHT_PERCENT = 22.9
 
 export default function GameTimer() {
   const progress = useSelector((s) => s.game.progress)
+  const scrollPuffId = useSelector((s) => s.feed.scrollPuffId)
   const whiteHeight = (progress / 100) * WHITE_HEIGHT_PERCENT
 
   return (
@@ -18,6 +19,13 @@ export default function GameTimer() {
     >
       <div className="game-timer-track" />
       <div className="game-timer-orange" />
+      {scrollPuffId > 0 && (
+        <div key={scrollPuffId} className="game-timer-smoke" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      )}
       <div className="game-timer-white" style={{ height: `${whiteHeight}%` }} />
       <div
         className="game-timer-red"

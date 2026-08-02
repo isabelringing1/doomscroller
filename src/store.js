@@ -4,21 +4,33 @@ import { isInstructionBlocked } from './Util.js'
 import { MIN_PAGE_INDEX, speedUpTierForIndex } from './pageMeta.js'
 
 const clampPageIndex = (index) => Math.max(MIN_PAGE_INDEX, index)
-const INSTRUCTION_PROGRESS_PERCENT = 2
+const INSTRUCTION_PROGRESS_PERCENT = 3
 const NAVIGATION_SCROLL_INSTRUCTION_IDS = new Set(['scroll_down', 'scroll_up'])
 
 const feedSlice = createSlice({
   name: 'feed',
-  initialState: { currentIndex: 0, scrollDirection: null, titleDismissed: false, feedGeneration: 0 },
+  initialState: {
+    currentIndex: 0,
+    scrollDirection: null,
+    scrollPuffId: 0,
+    titleDismissed: false,
+    feedGeneration: 0,
+  },
   reducers: {
     next: (s) => { s.currentIndex = clampPageIndex(s.currentIndex + 1) },
     prev: (s) => { s.currentIndex = clampPageIndex(s.currentIndex - 1) },
     setIndex: (s, { payload }) => { s.currentIndex = clampPageIndex(payload) },
-    setScrollDirection: (s, { payload }) => { s.scrollDirection = payload },
+    setScrollDirection: (s, { payload }) => {
+      if (payload && s.scrollDirection == null) {
+        s.scrollPuffId += 1
+      }
+      s.scrollDirection = payload
+    },
     dismissTitle: (s) => { s.titleDismissed = true },
     resetFeed: (s) => {
       s.currentIndex = 0
       s.scrollDirection = null
+      s.scrollPuffId = 0
       s.titleDismissed = false
       s.feedGeneration += 1
     },

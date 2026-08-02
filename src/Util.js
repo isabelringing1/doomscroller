@@ -163,7 +163,7 @@ function buildInstructionIdSequence(index, generation) {
     }
   }
 
-  if (ids[ids.length - 1] === 'comments') {
+  if (ids.includes('comments')) {
     ids.push('scroll_comments', 'close_comments')
   }
 
@@ -183,7 +183,7 @@ function buildInstructionIdSequence(index, generation) {
   if (index > MIN_PAGE_INDEX && rollPercent(index, 'scroll-up', generation) < 5) {
     //ids.push('scroll_up')
   }
-
+  console.log(ids)
   return ids
 }
 

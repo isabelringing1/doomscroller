@@ -119,6 +119,55 @@ button{
   background: #ffb15f;
 }
 
+.game-timer-smoke {
+  position: absolute;
+  bottom: 12%;
+  left: 75%;
+  z-index: 20;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.game-timer-smoke span {
+  position: absolute;
+  width: clamp(32px, 8vw, 64px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #ffffffb0, rgba(255, 255, 255, 0.5) 42%, rgba(255, 255, 255, 0.25) 68%, transparent 100%);
+  box-shadow: 0 0 18px 6px rgba(255, 255, 255, 0.24);
+  filter: blur(2px);
+  opacity: 0;
+  animation: cigarette-smoke-puff 1.4s ease-out forwards;
+}
+
+.game-timer-smoke span:nth-child(2) {
+  width: clamp(42px, 10vw, 80px);
+  animation-delay: 100ms;
+}
+
+.game-timer-smoke span:nth-child(3) {
+  width: clamp(26px, 6vw, 52px);
+  animation-delay: 200ms;
+}
+
+@keyframes cigarette-smoke-puff {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.35);
+  }
+  15% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(12vw, -28dvh) scale(1.8);
+  }
+}
+
 @keyframes score-value-pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.5); }
