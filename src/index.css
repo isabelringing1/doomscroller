@@ -702,62 +702,83 @@ button{
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.75);
+  padding: max(24px, env(safe-area-inset-top, 0px)) 0 max(24px, env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .game-over-popup {
-  width: 70vw;
+  width: min(75vw, 420px);
+  max-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 1.5dvh;
-  padding: 6dvh 3dvh;
+  gap: 0;
+  padding: 4.5dvh 5vw 3dvh;
   box-sizing: border-box;
-  background: #e3e3e3;
-  border-radius: 16px;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 10px;
   text-align: center;
   color: #000;
+  font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 .game-over-title {
   margin: 0;
-  font-size: 8vw;
-  font-weight: 600;
-}
-
-.game-over-score {
-  margin: 0;
-  font-size: 6vw;
-  font-weight: 600;
+  font-family: 'Marlboro', Impact, serif;
+  font-size: 10vw;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0;
 }
 
 .game-over-duration {
-  margin: 0;
+  margin: 2.2dvh 0 0;
   font-size: 5vw;
   font-weight: 400;
+  line-height: 1.25;
 }
 
-.game-over-new-high-score {
-  margin: 1dvh 0 0;
+.game-over-message {
+  margin: 3.2dvh 0 0;
   font-size: 5vw;
-  font-weight: 500;
-  color: var(--color-success);
+  line-height: 1.28;
+  
 }
 
-.game-over-zen-unlocked {
-  margin: 1dvh 0 0;
-  font-size: 5vw;
-  font-weight: 500;
-  color: #61bbff;
+.game-over-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2dvh;
+  margin-top: 4.5dvh;
 }
 
-.game-over-start-over {
-  margin-top: 2dvh;
-  padding: 12px 28px;
+.game-over-button {
+  width: 32vw;
+  min-width: 128px;
+  max-width: 160px;
+  padding: 1dvh 12px 0.6dvh;
+  border: 0;
+  border-radius: 18px;
+  color: #000;
+  font-family: 'Marlboro', Impact, serif;
+  font-size: 7vw;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0;
 }
 
-.game-over-start-over:active {
+.game-over-back {
+  background: #bdbdbd;
+}
+
+.game-over-share {
+  background: #50f448;
+}
+
+.game-over-button:active {
   transform: scale(0.96);
 }
 
