@@ -90,7 +90,9 @@ button{
   border-radius: 4px 4px 0 0;
   background: #ff3b24;
   box-shadow: 0 0 6px 2px rgba(255, 45, 20, 0.8);
-  transition: bottom 600ms ease-out;
+  transition:
+    bottom var(--game-timer-transition-ms, 600ms)
+    var(--game-timer-transition-easing, ease-out);
   animation: cigarette-ember-glow 1.4s ease-in-out infinite alternate;
 }
 
@@ -109,7 +111,9 @@ button{
   bottom: 22.9%;
   height: 72.4%;
   background: #fff;
-  transition: height 600ms ease-out;
+  transition:
+    height var(--game-timer-transition-ms, 600ms)
+    var(--game-timer-transition-easing, ease-out);
 }
 
 .game-timer-orange {

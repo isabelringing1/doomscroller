@@ -4,7 +4,7 @@ import { isInstructionBlocked } from './Util.js'
 import { MIN_PAGE_INDEX, speedUpTierForIndex } from './pageMeta.js'
 
 const clampPageIndex = (index) => Math.max(MIN_PAGE_INDEX, index)
-const INSTRUCTION_PROGRESS_PERCENT = 3
+export const INSTRUCTION_PROGRESS_PERCENT = 3
 const NAVIGATION_SCROLL_INSTRUCTION_IDS = new Set(['scroll_down', 'scroll_up'])
 
 const feedSlice = createSlice({
